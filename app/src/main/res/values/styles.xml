@@ -8,4 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.StatusColor" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:statusBarColor">@color/mjn_primary_transparent</item>
+    </style>
 </resources>

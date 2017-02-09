@@ -5,4 +5,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="mjn_while">#ffffff</color>
+    <color name="mjn_primary_transparent">#328332</color>
 </resources>
