@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:layout_margin="16dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="148dp"
+            android:layout_margin="5dp"
+            android:visibility="visible"
+            map:cameraTargetLat="13.736717"
+            map:cameraTargetLng="100.523186"
+            map:cameraZoom="15"
+            map:liteMode="true"
+            map:mapType="normal" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/box_direction"
+            android:background="@color/mjn_default_gray" />
+
+        <FrameLayout
+            android:id="@+id/box_direction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/mjn_while">
+
+            <TextView
+                android:id="@+id/detail_get_direction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="Get Direction"
+                android:textStyle="bold" />
+        </FrameLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

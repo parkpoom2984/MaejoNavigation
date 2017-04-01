@@ -1,13 +1,39 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/detail_fragment"
     tools:context="th.ac.mju.maejonavigation.screen.main.detail.DetailFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <!--<android.support.v4.widget.SwipeRefreshLayout-->
+        <!--android:id="@+id/swipe_refreshLayout"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content">-->
 
-</FrameLayout>
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/card_detail_location"
+                    android:id="@+id/card_detail_location"
+                    android:visibility="gone"/>
+
+                <include layout="@layout/card_detail_map"
+                    android:id="@+id/card_detail_map"
+                    android:visibility="gone"/>
+
+                <include layout="@layout/card_detail_default"
+                    android:id="@+id/card_default"
+                    android:visibility="visible"/>
+
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
+    <!--</android.support.v4.widget.SwipeRefreshLayout>-->
+</LinearLayout>

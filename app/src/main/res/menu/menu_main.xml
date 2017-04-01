@@ -5,9 +5,13 @@
     tools:context=".screen.home.MainActivity">
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/search_logo_1"
+        android:icon="@drawable/ic_search"
         android:title="text menu action search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always|collapseActionView" />
-
+    <item
+        android:id="@+id/menu_map"
+        android:icon="@drawable/ic_map"
+        android:title="map"
+        app:showAsAction="always|collapseActionView"/>
 </menu>

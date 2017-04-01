@@ -1,63 +1,111 @@
 package th.ac.mju.maejonavigation.screen.main;
 
-import android.graphics.Color;
-import android.support.design.widget.TabLayout;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.support.design.widget.TabLayout;
+
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
+
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
+
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+
+import de.greenrobot.event.EventBus;
 import th.ac.mju.maejonavigation.R;
+import th.ac.mju.maejonavigation.app.MjnActivity;
+
+
+import th.ac.mju.maejonavigation.event.SearchEvent;
+import th.ac.mju.maejonavigation.model.Location;
 import th.ac.mju.maejonavigation.screen.main.category.CategoryFragment;
 import th.ac.mju.maejonavigation.screen.main.detail.DetailFragment;
-import th.ac.mju.maejonavigation.screen.main.favorite.FavoriteFragment;
-import th.ac.mju.maejonavigation.screen.main.location.LocationFragment;
 
-public class MainActivity extends AppCompatActivity {
+import th.ac.mju.maejonavigation.screen.main.location.LocationFragment;
+import th.ac.mju.maejonavigation.screen.map.MapActivity;
+
+import static th.ac.mju.maejonavigation.screen.main.MainActivity.State.*;
+
+public class MainActivity extends MjnActivity implements MainPresenter.SearchListener {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    private int[] tabsIcon ={
+    private MainPresenter mainPresenter;
+    private int[] tabsIcon = {
             R.drawable.category_logo_2,
             R.drawable.location_logo_2,
-            R.drawable.detail_logo_1,
-            R.drawable.favorite_logo_1
+            R.drawable.detail_logo_1
     };
 
-    @InjectView(R.id.dashboard_toolbar) Toolbar toolbar;
-    @InjectView(R.id.dashboard_viewpager) ViewPager mViewPager;
-    @InjectView(R.id.dashboard_tab) TabLayout tabLayout;
+    @InjectView(R.id.dashboard_toolbar)
+    Toolbar toolbar;
+    @InjectView(R.id.dashboard_viewpager)
+    ViewPager mViewPager;
+    @InjectView(R.id.dashboard_tab)
+    TabLayout tabLayout;
+
+    @Override
+    public void updateFromSearch(List<Location> listLocation) {
+        EventBus bus = EventBus.getDefault();
+        bus.post(new SearchEvent(listLocation));
+    }
+
+    public enum State {
+        CATEGORY_PAGE(0), LOCATION_PAGE(1), DETAIL_PAGE(2);
+        private int position;
+
+        State(int position) {
+            this.position = position;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+        mainPresenter = new MainPresenter();
+        mainPresenter.create(this);
 
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         updateUI();
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                switchTabTo(LOCATION_PAGE.getPosition());
+                break;
+            case R.id.menu_map:
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fab_fade_in, R.anim.fab_fade_out);
+                break;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
-
-
-    public class SectionsPagerAdapter extends FragmentPagerAdapter{
+    //change fragmentPagerAdapter
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -65,47 +113,39 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            switch (position) {
-                case 0 :
-                    return new CategoryFragment();
-                case 1 :
-                    return new LocationFragment();
-                case 2 :
-                    return new DetailFragment();
-                case 3 :
-                    return new FavoriteFragment();
-                default:
-                    return null;
+            if (position == CATEGORY_PAGE.getPosition()) {
+                return new CategoryFragment();
+            } else if (position == LOCATION_PAGE.getPosition()) {
+                return new LocationFragment();
+            } else if (position == DETAIL_PAGE.getPosition()) {
+                return new DetailFragment();
+            } else {
+                return null;
             }
         }
 
         @Override
         public int getCount() {
-            return 4;
+            return tabsIcon.length;
         }
     }
 
-    public void updateUI(){
-
+    public void updateUI() {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
         mViewPager.setOffscreenPageLimit(0);
-
         tabLayout.setupWithViewPager(mViewPager);
-        for(int i = 0 ; i < mSectionsPagerAdapter.getCount() ;i++ ) {
+        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             tabLayout.getTabAt(i).setIcon(tabsIcon[i]);
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        final SearchView searchView =(SearchView) menu.findItem(R.id.action_search).getActionView();
+        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -114,11 +154,16 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //do here when have event text change
+                mainPresenter.querySearch(getRealm(), newText);
+                switchTabTo(LOCATION_PAGE.getPosition());
                 return false;
             }
         });
         return true;
+    }
+
+    public void switchTabTo(int i) {
+        mViewPager.setCurrentItem(i);
     }
 
 }

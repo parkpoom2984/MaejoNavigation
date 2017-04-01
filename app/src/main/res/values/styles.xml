@@ -8,11 +8,23 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MjnTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/mjn_primary</item>
+        <item name="colorPrimaryDark">@color/mjn_primary_dark</item>
+        <item name="colorAccent">@color/mjn_default_gray</item>
+        <item name="android:statusBarColor">@color/mjn_primary_dark</item>
+    </style>
+
+
+
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="AppTheme.StatusColor" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:statusBarColor">@color/mjn_primary_transparent</item>
+    <style name="AppTheme.StatusColor" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/mjn_primary</item>
+        <item name="colorAccent">@color/mjn_default_gray</item>
+        <item name="android:statusBarColor">@color/mjn_primary_dark</item>
     </style>
 </resources>
