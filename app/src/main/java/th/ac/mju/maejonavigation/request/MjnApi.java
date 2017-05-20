@@ -1,13 +1,8 @@
 package th.ac.mju.maejonavigation.request;
 
-
-
-
-
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import th.ac.mju.maejonavigation.model.DataStatus;
 import th.ac.mju.maejonavigation.model.ListCategory;
 
 
@@ -18,4 +13,6 @@ import th.ac.mju.maejonavigation.model.ListCategory;
 public interface  MjnApi {
     @GET("JSONDataServlet")
     Call<ListCategory> getListCategory();
+    @GET("JSONStatusServlet")
+    Call<DataStatus> getDataStatus();
 }

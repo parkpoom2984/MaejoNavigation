@@ -47,7 +47,7 @@
                 android:id="@+id/location_room_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
+                android:textColor="@color/mjn_primary"
                 android:textSize="12sp"/>
 
         </LinearLayout>

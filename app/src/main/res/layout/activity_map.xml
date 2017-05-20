@@ -1,36 +1,50 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white" >
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <fragment class="com.google.android.gms.maps.SupportMapFragment"
+    <fragment
         android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <LinearLayout
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        tools:context=".viewMapsManager.MapsActivity" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/map_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/main_icon"
+        app:backgroundTint="@color/mjn_primary"
+        tools:ignore="RtlHardcoded"/>
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingTop="4dp"
-            android:paddingLeft="36dp"
-            android:paddingRight="36dp"
-            android:paddingBottom="18dp"
-            android:clipToPadding="false"
-            android:overScrollMode="never" />
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="ca-app-pub-4743025835921005/7125252778" />
+</RelativeLayout>
 
-    </LinearLayout>
-
-</FrameLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/refresh_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="@dimen/activity_vertical_margin"
+        app:backgroundTint="@color/mjn_primary"
+        android:src="@drawable/current_button_1"
+        android:layout_marginBottom="50dp"
+        tools:ignore="RtlHardcoded"/>
+</android.support.design.widget.CoordinatorLayout>

@@ -13,6 +13,7 @@
 
 
         <com.google.android.gms.maps.MapView
+            android:clickable="false"
             android:id="@+id/map_view"
             android:layout_width="match_parent"
             android:layout_height="148dp"
@@ -44,7 +45,7 @@
                 android:background="?selectableItemBackground"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Get Direction"
+                android:text="@string/show_direction"
                 android:textStyle="bold" />
         </FrameLayout>
     </RelativeLayout>

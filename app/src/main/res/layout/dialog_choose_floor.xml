@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:background="@color/mjn_while"
+    android:layout_width="300dp"
+    android:layout_height="240dp">
+
+    <LinearLayout
+        android:background="@color/mjn_primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/change_type_close"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:src="@drawable/ic_close_white"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+        <TextView
+            android:textSize="16sp"
+            android:textColor="@color/mjn_while"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:text="เลือกชั้น"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_gravity="center_horizontal"
+            android:textStyle="bold"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:id="@+id/location_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.goodiebag.horizontalpicker.HorizontalPicker
+            android:id="@+id/picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:textSize="18sp"
+            app:itemMargin="10dp"
+            app:itemHeight="40dp"
+            app:itemWidth="40dp"
+            android:background="?selectableItemBackground"
+            app:backgroundSelector="@drawable/floor_select"
+            app:textColorSelector="@color/mjn_while"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

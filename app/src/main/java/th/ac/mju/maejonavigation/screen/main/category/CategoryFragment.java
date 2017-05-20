@@ -4,6 +4,7 @@ package th.ac.mju.maejonavigation.screen.main.category;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-import de.greenrobot.event.EventBus;
+import io.realm.Realm;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.event.SelectCategoryEvent;
 import th.ac.mju.maejonavigation.fragment.MjnFragment;
@@ -56,8 +57,7 @@ public class CategoryFragment extends MjnFragment implements CategoryPresenter.V
 
     @Override
     public void onClick(Category category) {
-        EventBus bus = EventBus.getDefault();
-        bus.post(new SelectCategoryEvent(category));
+        getBus().post(new SelectCategoryEvent(category));
         ((MainActivity)getActivity()).switchTabTo(LOCATION_PAGE.getPosition());
     }
 }

@@ -7,7 +7,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 import th.ac.mju.maejonavigation.model.Category;
-import th.ac.mju.maejonavigation.model.Location;
+import th.ac.mju.maejonavigation.model.Locations;
 
 /**
  * Created by Teh on 3/31/2017.
@@ -28,7 +28,7 @@ public class LocationPresenter {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<Location> listLocation = realm.where(Location.class)
+                RealmResults<Locations> listLocation = realm.where(Locations.class)
                         .findAll();
                 view.showListLocation(listLocation);
             }
@@ -47,7 +47,7 @@ public class LocationPresenter {
     }
 
     interface View{
-        void showListLocation(List<Location> listLocation);
-        void showListLocationByCategory(List<Location> listLocationByCategory);
+        void showListLocation(List<Locations> listLocation);
+        void showListLocationByCategory(List<Locations> listLocationByCategory);
     }
 }

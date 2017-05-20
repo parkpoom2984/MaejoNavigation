@@ -1,19 +1,16 @@
 package th.ac.mju.maejonavigation.prefer;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.Preference;
 
 /**
- * Created by Teh on 3/24/2017.
+ * Created by Teh on 5/19/2017.
  */
 
-public class BooleanPreference{
-
+public class StringPreference {
     private final SharedPreferences sharedPreferences;
     private final String key;
 
-    public BooleanPreference(SharedPreferences preferences,String key) {
+    public StringPreference(SharedPreferences preferences,String key) {
         sharedPreferences = preferences;
         this.key = key;
     }
@@ -22,12 +19,12 @@ public class BooleanPreference{
         return sharedPreferences.contains(key);
     }
 
-    public final boolean get() {
-        return sharedPreferences.getBoolean(key,false);
+    public final String get() {
+        return sharedPreferences.getString(key,"");
     }
 
-    public final void set(boolean value) {
-        sharedPreferences.edit().putBoolean(key,value).apply();
+    public final void set(String value) {
+        sharedPreferences.edit().putString(key,value).apply();
     }
 
     public final void delete() {

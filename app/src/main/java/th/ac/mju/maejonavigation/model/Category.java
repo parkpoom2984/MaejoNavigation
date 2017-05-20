@@ -1,15 +1,6 @@
 package th.ac.mju.maejonavigation.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -20,7 +11,7 @@ import io.realm.annotations.PrimaryKey;
  */
 
 
-
+//create table database
 public class Category extends RealmObject{
 
     public Category() {}
@@ -33,7 +24,7 @@ public class Category extends RealmObject{
     String categoryName;
 
     @SerializedName("listLocation")
-    RealmList<Location> listLocation;
+    RealmList<Locations> listLocation = new RealmList<>();
 
     public int getCategoryId() {
         return categoryId;
@@ -43,7 +34,7 @@ public class Category extends RealmObject{
         return categoryName;
     }
 
-    public RealmList<Location> getListLocation() {
+    public RealmList<Locations> getListLocation() {
         return listLocation;
     }
 }

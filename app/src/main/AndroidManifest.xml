@@ -43,16 +43,29 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"
             tools:replace="android:value" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDuqjSISgaqh63cr51RzTmtKQOCzbrssD0" />
+        <!-- <meta-data -->
+        <!-- android:name="com.google.android.maps.v2.API_KEY" -->
+        <!-- android:value="AIzaSyDuqjSISgaqh63cr51RzTmtKQOCzbrssD0" /> -->
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="b6924987979cb9fcd3e498faffd106348c439e50" />
 
-        <activity android:name=".screen.map.MapActivity"
-            android:theme="@style/MjnTheme">
+        <activity
+            android:name=".screen.map.MapActivity"
+            android:theme="@style/AppTheme.StatusColor">
+        </activity>
+        <activity
+            android:name=".screen.plan.PlanActivity"
+            android:theme="@style/AppTheme.StatusColor">
+        </activity>
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+        <activity android:name=".screen.plan.ZoomImageActivity"
+            android:theme="@style/AppTheme.StatusColor">
         </activity>
     </application>
 

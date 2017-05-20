@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">MaejoNavigation</string>
     <string name="splash_about_us">ⓇPowered By : Faculty of Science, Major of IT@MJU</string>
-
+    <string name="room_detail">รายละเอียดห้อง : %1$s</string>
+    <string name="room_type">ประเภทห้อง : %1$s</string>
+    <string name="room_capacity">ความจุ : %1$d คน</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="google_version">10298000</string>
+    <string name="show_direction">แสดงแผนที่</string>
 </resources>

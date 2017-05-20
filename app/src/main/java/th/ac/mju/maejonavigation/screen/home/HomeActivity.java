@@ -1,7 +1,7 @@
 package th.ac.mju.maejonavigation.screen.home;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
@@ -13,18 +13,13 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
-import java.util.List;
+import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
-import io.realm.Realm;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.fabric.sdk.android.Fabric;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
-import th.ac.mju.maejonavigation.model.Category;
-import th.ac.mju.maejonavigation.model.ListCategory;
-import th.ac.mju.maejonavigation.model.Location;
-import th.ac.mju.maejonavigation.prefer.BooleanPreference;
 import th.ac.mju.maejonavigation.screen.main.MainActivity;
 
 public class HomeActivity extends MjnActivity implements HomePresenter.View{
@@ -35,15 +30,15 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
     ImageView logoImageView;
     @InjectView(R.id.home_about_us)
     TextView aboutUsTextView;
-    @InjectView(R.id.home_progress_loading)
-    TextView progressLoading;
 
     private HomePresenter homePresenter;
 
     @Override
     public void requestSuccess() {
-        setState(State.SUCCESS);
-        intentMain();
+        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fab_fade_in,R.anim.fab_fade_out);
     }
 
     @Override
@@ -60,6 +55,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home);
         ButterKnife.inject(this);
         updateStatusBar();
@@ -70,12 +66,12 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
             @Override
             public void run()
             {
-                if(!homePresenter.getPreference()){
+                if(!homePresenter.isStatusSet()){
                     setState(State.LOADING);
                     homePresenter.callFromService(getService(),getRealm());
-                    //getRealm().commitTransaction();
                 }else{
-                    intentMain();
+                    setState(State.LOADING);
+                    homePresenter.isLastVersion(getService(),getRealm());
                 }
             }
         };
@@ -96,7 +92,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         handler.removeCallbacks(runnable);
     }
@@ -104,22 +100,14 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
     private void setState(State state) {
         switch (state) {
             case LOADING:
-                progressLoading.setVisibility(View.VISIBLE);
+                ProgressDialog progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("loading");
+                progressDialog.show();
                 logoImageView.setVisibility(View.GONE);
                 aboutUsTextView.setVisibility(View.GONE);
-                break;
-            case SUCCESS:
-                progressLoading.setVisibility(View.GONE);
                 break;
             case FAILURE:
                 break;
         }
-    }
-
-    private void intentMain(){
-        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        overridePendingTransition(R.anim.fab_fade_in,R.anim.fab_fade_out);
     }
 }

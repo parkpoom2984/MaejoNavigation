@@ -1,16 +1,19 @@
 package th.ac.mju.maejonavigation.screen.main.detail;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -24,38 +27,39 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.common.eventbus.Subscribe;
+
+//import com.squareup.otto.Subscribe;
+import com.squareup.otto.Subscribe;
 import com.viewpagerindicator.LinePageIndicator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
+import io.realm.Realm;
 import th.ac.mju.maejonavigation.R;
+import th.ac.mju.maejonavigation.dialog.ChooseFloorDialog;
 import th.ac.mju.maejonavigation.event.SelectLocationEvent;
 import th.ac.mju.maejonavigation.fragment.MjnFragment;
-import th.ac.mju.maejonavigation.model.Location;
+import th.ac.mju.maejonavigation.intent.MapIntent;
+import th.ac.mju.maejonavigation.intent.PlanIntent;
+import th.ac.mju.maejonavigation.model.Locations;
+import th.ac.mju.maejonavigation.screen.main.MainActivity;
+import th.ac.mju.maejonavigation.screen.main.location.LocationFragment;
 import th.ac.mju.maejonavigation.unity.SettingValues;
 
 
 public class DetailFragment extends MjnFragment {
 
-    @InjectView(R.id.location_view_pager)
-    ViewPager mViewPager;
     @InjectView(R.id.map_view)
     MapView mMapView;
-    //@InjectView(R.id.swipe_refreshLayout)
-    //SwipeRefreshLayout swipeRefreshLayout;
     @InjectView(R.id.detail_location_name)
     TextView locationName;
     @InjectView(R.id.detail_location)
     TextView locationDetail;
-    @InjectView(R.id.indicator)
-    LinePageIndicator indicator;
     @InjectView(R.id.view_pager_layout)
     RelativeLayout viewPagerLayout;
-
-
+    @InjectView(R.id.location_image_detail) ImageView imageLocation;
     @InjectView(R.id.card_default)
     CardView defaultCard;
     @InjectView(R.id.card_detail_location)
@@ -65,24 +69,17 @@ public class DetailFragment extends MjnFragment {
     @InjectView(R.id.detail_image_default)
     ImageView imageDefault;
     @InjectView(R.id.detail_name_default)TextView nameDefault;
-    EventBus bus = EventBus.getDefault();
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        bus.register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        bus.unregister(this);
-    }
-
+    Locations location;
+    @InjectView(R.id.plan_line) View line;
+    @InjectView(R.id.plan_box_view)
+    FrameLayout boxViewPlan;
+    @InjectView(R.id.detail_icon_favorite) ImageView iconFavorite;
     private enum State{
         DEFAULT_PAGE,DETAIL_PAGE;
     }
-
+    public static DetailFragment newInstance(){
+        return new DetailFragment();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,13 +89,16 @@ public class DetailFragment extends MjnFragment {
         mMapView.onCreate(savedInstanceState);
         setState(State.DEFAULT_PAGE);
         updateDefaultPage();
-        //swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener(){
-        //
-        //    @Override
-        //    public void onRefresh() {
-        //        refreshItems();
-        //    }
-        //});
+        if (getArguments() != null) {
+            final int locationId =  getArguments().getInt("location_id");
+            getRealm().executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    location = realm.where(Locations.class).equalTo("locationId",locationId).findFirst();
+                    updateLocationDetail(location);
+                }
+            });
+        }
         return view;
     }
 
@@ -107,100 +107,45 @@ public class DetailFragment extends MjnFragment {
         nameDefault.setText(SettingValues.DEFAULT_LOCATION_NAME);
     }
 
-
-    public class ImagePager extends PagerAdapter {
-
-        @InjectView(R.id.item_pager_image)
-        ImageView image_detail;
-        Context mContext;
-        LayoutInflater mLayoutInflater;
-        private String imageUrl;
-
-        public ImagePager(Context context, String imageUrl) {
-            mContext = context;
-            mLayoutInflater = (LayoutInflater) mContext.getSystemService(
-                    Context.LAYOUT_INFLATER_SERVICE);
-            this.imageUrl = imageUrl;
-        }
-
-        @Override
-        public int getCount() {
-            return 4;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == (LinearLayout) object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            View itemView = mLayoutInflater.inflate(R.layout.item_image_detail, container, false);
-            ButterKnife.inject(this, itemView);
-            Context context = itemView.getContext();
-            Glide.with(context)
-                    .load(SettingValues.IMAGE_LOCATION_PATH + imageUrl + ".jpg")
-                    .placeholder(R.drawable.img_default)
-                    .into(image_detail);
-            container.addView(itemView);
-            return itemView;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((LinearLayout) object);
-        }
-    }
-
-
-    //public void refreshItems(){
-    //    ImagePager mWelcomePagerAdapter = new ImagePager(getActivity());
-    //    mViewPager.setAdapter(mWelcomePagerAdapter);
-    //    onRefreshCompleted();
-    //}
-
-    //private void onRefreshCompleted() {
-    //    swipeRefreshLayout.setRefreshing(false);
-    //}
-
     @Subscribe
     public void onEvent(SelectLocationEvent event) {
+        location = event.getLocation();
+        updateLocationDetail(location);
+    }
+
+    public void updateLocationDetail(Locations location){
         setState(State.DETAIL_PAGE);
-        final Location location = event.getLocation();
         locationName.setText(location.getLocationName());
         locationDetail.setText(location.getLocationDetails());
-        ImagePager mWelcomePagerAdapter = new ImagePager(getActivity(),
-                location.getImageLocationPath());
-        mViewPager.setAdapter(mWelcomePagerAdapter);
-        indicator.setViewPager(mViewPager);
+        boolean isFloorEmpty = location.getListFloor().size() == 0;
+        boxViewPlan.setVisibility(isFloorEmpty ? View.GONE : View.VISIBLE);
+        line.setVisibility(isFloorEmpty ? View.GONE : View.VISIBLE);
+        Glide.with(this)
+                .load(SettingValues.IMAGE_LOCATION_PATH + location.getImageLocationPath() + ".jpg")
+                .placeholder(R.drawable.img_default)
+                .into(imageLocation);
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         int icon = getResources().getIdentifier(
                 SettingValues.CATEGORY_MARKER + location.getCategoryId(), "drawable",
                 getContext().getPackageName());
+        showIconFavorite(location.getFavoriteStatus());
         updateMapUI(latLng, icon);
-        //mMapView.getMapAsync(new OnMapReadyCallback() {
-        //    @Override
-        //    public void onMapReady(GoogleMap googleMap) {
-        //        googleMap.addMarker(new MarkerOptions().position(
-        //                new LatLng(location.getLatitude(), location.getLongitude())).icon(
-        //                BitmapDescriptorFactory.defaultMarker()));
-        //
-        //        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng
-        // (location.getLatitude(), location.getLongitude()), 10);
-        //        googleMap.animateCamera(cameraUpdate);
-        //    }
-        //});
-        //BitmapDescriptorFactory.fromResource(R.drawable.category_marker_1)
+        checkNetworkAvailable();
     }
 
     @OnClick(R.id.detail_get_direction)
     public void onClickGetDirection() {
-        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345"));
-        startActivity(intent);
+        startActivity(new MapIntent(getContext(),false,location));
+    }
+
+    @OnClick(R.id.plan_box_view)
+    public void onClickViewPlan(){
+        ChooseFloorDialog dialog = new ChooseFloorDialog(getContext(),location.getLocationName(),location.getListFloor());
+        dialog.show();
     }
 
     public void updateMapUI(final LatLng latLng, final int icon) {
+
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
@@ -210,19 +155,6 @@ public class DetailFragment extends MjnFragment {
                         .icon(BitmapDescriptorFactory.fromResource(icon))
                         .position(latLng));
                 googleMap.animateCamera((CameraUpdateFactory.newLatLngZoom((latLng), 15)));
-                //googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                //    @Override
-                //    public boolean onMarkerClick(Marker marker) {
-                //        marker.showInfoWindow();
-                //        return false;
-                //    }
-                //});
-                //googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                //    @Override
-                //    public void onMapClick(LatLng latLng) {
-                //
-                //    }
-                //});
             }
         });
     }
@@ -240,6 +172,50 @@ public class DetailFragment extends MjnFragment {
                 locationCard.setVisibility(View.VISIBLE);
                 mapCard.setVisibility(View.VISIBLE);
                 break;
+        }
+    }
+
+    public void checkNetworkAvailable(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager)  getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        boolean isConnect = activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        Snackbar snackbar = Snackbar.make(locationCard,"Internet can't connect",Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("Try again", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkNetworkAvailable();
+                updateLocationDetail(location);
+            }
+        });
+        if(!isConnect){
+            snackbar.show();
+        }else{
+            snackbar.dismiss();
+        }
+    }
+
+    @OnClick(R.id.detail_icon_favorite)
+    public void onClickIconFavorite(){
+        getRealm().executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                Locations locationEdit = realm.where(Locations.class).equalTo("locationId",location.getLocationId()).findFirst();
+                locationEdit.setFavoriteStatus(locationEdit.getFavoriteStatus()*-1);
+                realm.copyToRealmOrUpdate(locationEdit);
+                showIconFavorite(locationEdit.getFavoriteStatus());
+            }
+        });
+        ((MainActivity) getActivity()).switchTabTo(1);
+        ((MainActivity) getActivity()).switchTabTo(2);
+    }
+
+
+    public void showIconFavorite(int favoriteStatus){
+        if(favoriteStatus==1){
+            iconFavorite.setImageResource(R.drawable.fav_full);
+        }else{
+            iconFavorite.setImageResource(R.drawable.fav_blank);
         }
     }
 }
