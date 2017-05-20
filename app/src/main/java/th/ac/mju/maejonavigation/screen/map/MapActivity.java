@@ -2,6 +2,7 @@ package th.ac.mju.maejonavigation.screen.map;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 
@@ -27,6 +29,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Result;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -54,18 +57,21 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
+import th.ac.mju.maejonavigation.dialog.SelectCategoryDialog;
 import th.ac.mju.maejonavigation.intent.MainIntent;
 import th.ac.mju.maejonavigation.intent.MapIntent;
+import th.ac.mju.maejonavigation.model.Category;
 import th.ac.mju.maejonavigation.model.Locations;
 import th.ac.mju.maejonavigation.screen.main.MainActivity;
 import th.ac.mju.maejonavigation.unity.SettingValues;
 
+import static android.R.id.list;
 import static th.ac.mju.maejonavigation.intent.MapIntent.LOCATION_DIRECTION;
 import static th.ac.mju.maejonavigation.intent.PlanIntent.FLOOR;
 
 public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,SelectCategoryDialog.View {
     private SupportMapFragment supportMapFragment;
     private GoogleApiClient googleApiClient;
     private GoogleMap map;
@@ -76,6 +82,8 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     @InjectView(R.id.refresh_map) FloatingActionButton refreshMapFloatAction;
     @InjectView(R.id.adView)
     AdView adView;
+    AlertDialog alert;
+    SelectCategoryDialog selectCategoryDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +92,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         initAd();
         isTypeAllLocation = getIntent().getBooleanExtra(MapIntent.TYPE_ALL_LOCATION,false);
         locationDirection = Parcels.unwrap(this.getIntent().getParcelableExtra(LOCATION_DIRECTION));
-
+        selectCategoryDialog = new SelectCategoryDialog(this,this);
         supportMapFragment = ((SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
@@ -100,16 +108,9 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         getRealm().executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<Locations> results = realm.where(Locations.class).findAll();
-                List<Locations> listLocation = realm.copyFromRealm(results);
-                for(Locations location : listLocation){
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-                    int id = getResources().getIdentifier(SettingValues.CATEGORY_MARKER+location.getCategoryId(), "drawable", getPackageName());
-                    map.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(location.getLocationName() + "").icon(BitmapDescriptorFactory.fromResource(id)));
-                }
-                setOnClickMarker(listLocation);
-                setOnClickInfoMarker(listLocation);
+                RealmResults<Category> listCategory = realm.where(Category.class).findAll();
+                selectCategoryDialog.create(listCategory);
+                alert = selectCategoryDialog.getBuilder().create();
             }
         });
     }
@@ -245,6 +246,8 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         makePolylineOptions(locationDirection);
     }
 
+
+
     @OnClick(R.id.map_menu)
     public void onClickMenu(){
         startActivity(new Intent(MapActivity.this,MainActivity.class));
@@ -300,10 +303,41 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         });
     }
 
+
+
     public void initAd(){
         AdRequest.Builder adBuilder = new AdRequest.Builder();
         adBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
         AdRequest adRequest = adBuilder.build();
         adView.loadAd(adRequest);
+    }
+
+    @OnClick(R.id.select_map)
+    public void onClickSelect() {
+        alert.show();
+    }
+
+    @Override
+    public void onClickPositiveButton(ArrayList<Integer> listPositionCategory) {
+        map.clear();
+        List<Locations> listAllLocation = new ArrayList<>();
+        for(Integer position : listPositionCategory){
+            RealmResults<Locations> listLocation = getRealm().where(Locations.class).equalTo("categoryId",position).findAll();
+            for(Locations location : listLocation){
+                    listAllLocation.add(location);
+                    double lat = location.getLatitude();
+                    double lng = location.getLongitude();
+                    int id = getResources().getIdentifier(SettingValues.CATEGORY_MARKER+location.getCategoryId(), "drawable", getPackageName());
+                    map.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(location.getLocationName() + "").icon(BitmapDescriptorFactory.fromResource(id)));
+            }
+        }
+        setOnClickMarker(listAllLocation);
+        setOnClickInfoMarker(listAllLocation);
+
+    }
+
+    @Override
+    public void onClickNeutralButton() {
+
     }
 }

@@ -157,6 +157,7 @@ public class DetailFragment extends MjnFragment {
                 googleMap.animateCamera((CameraUpdateFactory.newLatLngZoom((latLng), 15)));
             }
         });
+        mMapView.setClickable(false);
     }
 
 
