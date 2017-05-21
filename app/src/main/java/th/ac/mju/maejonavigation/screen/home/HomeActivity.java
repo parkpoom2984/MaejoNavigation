@@ -1,10 +1,14 @@
 package th.ac.mju.maejonavigation.screen.home;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -48,8 +52,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
 
     private enum State {
         LOADING,
-        FAILURE,
-        SUCCESS
+        FAILURE
     }
 
     @Override
@@ -62,6 +65,10 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
         homePresenter = new HomePresenter();
         homePresenter.create(this,getApplicationContext());
         handler = new Handler();
+        checkNetworkAvailable();
+    }
+
+    private void connectLoadServiceData(){
         runnable = new Runnable() {
             @Override
             public void run()
@@ -75,6 +82,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
                 }
             }
         };
+        handler.postDelayed(runnable,time);
     }
 
 
@@ -88,7 +96,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
     @Override
     protected void onResume(){
         super.onResume();
-        handler.postDelayed(runnable,time);
+        //handler.postDelayed(runnable,time);
     }
 
     @Override
@@ -108,6 +116,26 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
                 break;
             case FAILURE:
                 break;
+        }
+    }
+
+    public void checkNetworkAvailable(){
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager)  getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        boolean isConnect = activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        Snackbar snackbar = Snackbar.make(logoImageView,"Internet can't connect",Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("Try again", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkNetworkAvailable();
+            }
+        });
+        if(!isConnect){
+            snackbar.show();
+        }else{
+            snackbar.dismiss();
+            connectLoadServiceData();
         }
     }
 }

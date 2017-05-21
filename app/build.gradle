@@ -29,7 +29,13 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -70,6 +76,7 @@ dependencies {
     compile 'com.victor:lib:1.0.4'
     compile 'com.roughike:swipe-selector:1.0.6'
     compile 'com.github.GoodieBag:HorizontalPicker:v1.0'
+    compile 'com.google.guava:guava:18.0'
     compile 'com.github.florent37:materialviewpager:1.2.1'
     compile 'com.flaviofaria:kenburnsview:1.0.7'
     compile 'com.jpardogo.materialtabstrip:library:1.1.0'

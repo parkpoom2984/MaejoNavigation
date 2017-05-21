@@ -1,6 +1,7 @@
 package th.ac.mju.maejonavigation.screen.main.detail;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -123,6 +125,7 @@ public class DetailFragment extends MjnFragment {
         Glide.with(this)
                 .load(SettingValues.IMAGE_LOCATION_PATH + location.getImageLocationPath() + ".jpg")
                 .placeholder(R.drawable.img_default)
+                .priority(Priority.LOW)
                 .into(imageLocation);
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         int icon = getResources().getIdentifier(
@@ -135,7 +138,9 @@ public class DetailFragment extends MjnFragment {
 
     @OnClick(R.id.detail_get_direction)
     public void onClickGetDirection() {
-        startActivity(new MapIntent(getContext(),false,location));
+        Intent intent = new MapIntent(getContext(),false,location);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @OnClick(R.id.plan_box_view)

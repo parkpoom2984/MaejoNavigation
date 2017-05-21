@@ -93,6 +93,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         isTypeAllLocation = getIntent().getBooleanExtra(MapIntent.TYPE_ALL_LOCATION,false);
         locationDirection = Parcels.unwrap(this.getIntent().getParcelableExtra(LOCATION_DIRECTION));
         selectCategoryDialog = new SelectCategoryDialog(this,this);
+        updateAllLocation();
         supportMapFragment = ((SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map));
         supportMapFragment.getMapAsync(this);
@@ -140,10 +141,10 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
             latLngCurrentLocation = new LatLng(lat,lng);
             if(isTypeAllLocation){
                 refreshMapFloatAction.setVisibility(View.GONE);
-                updateAllLocation();
             }else {
                 refreshMapFloatAction.setVisibility(View.VISIBLE);
                 makePolylineOptions(locationDirection);
+                setOnClickInfoMarker(null);
             }
         } else {
             // Do something when Locations Provider not available
@@ -250,7 +251,9 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
 
     @OnClick(R.id.map_menu)
     public void onClickMenu(){
-        startActivity(new Intent(MapActivity.this,MainActivity.class));
+        Intent intent = new Intent(MapActivity.this,MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
 
@@ -294,6 +297,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                                 }
                             });
                             makePolylineOptions(locationDirection);
+                            selectCategoryDialog.removeListPosition();
                             break;
                         }
                     }
@@ -320,6 +324,10 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     @Override
     public void onClickPositiveButton(ArrayList<Integer> listPositionCategory) {
         map.clear();
+        refreshMapFloatAction.setVisibility(View.GONE);
+        if(!listPositionCategory.isEmpty()){
+            isTypeAllLocation = true;
+        }
         List<Locations> listAllLocation = new ArrayList<>();
         for(Integer position : listPositionCategory){
             RealmResults<Locations> listLocation = getRealm().where(Locations.class).equalTo("categoryId",position).findAll();

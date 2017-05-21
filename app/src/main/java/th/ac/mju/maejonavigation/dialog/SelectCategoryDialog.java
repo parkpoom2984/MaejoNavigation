@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,10 @@ public class SelectCategoryDialog{
                 listener.onClickNeutralButton();
             }
         });
+    }
+
+    public void removeListPosition(){
+        listPositionCategory.clear();
     }
 
     public AlertDialog.Builder getBuilder() {

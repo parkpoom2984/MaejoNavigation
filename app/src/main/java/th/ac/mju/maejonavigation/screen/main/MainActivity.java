@@ -12,8 +12,11 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -23,10 +26,13 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
 
+import th.ac.mju.maejonavigation.dialog.AboutUsDialogFragment;
+import th.ac.mju.maejonavigation.dialog.Dialogs;
 import th.ac.mju.maejonavigation.event.SelectLocationEvent;
 import th.ac.mju.maejonavigation.intent.MapIntent;
 import th.ac.mju.maejonavigation.model.Locations;
@@ -61,6 +67,7 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
     @InjectView(R.id.adView) AdView adView;
     private LocationFragment locationFragment;
     int locationId;
+
     public enum State {
         CATEGORY_PAGE(0), LOCATION_PAGE(1), DETAIL_PAGE(2), FAVORITE_PAGE(3);
         private int position;
@@ -143,7 +150,6 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
     }
 
     public void updateUI() {
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(0);
@@ -196,5 +202,10 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
         AdRequest.Builder adBuilder = new AdRequest.Builder();
         AdRequest adRequest = adBuilder.build();
         adView.loadAd(adRequest);
+    }
+
+    @OnClick(R.id.main_logo)
+    public void onClickLogo(){
+        Dialogs.show(MainActivity.this, new AboutUsDialogFragment());
     }
 }
