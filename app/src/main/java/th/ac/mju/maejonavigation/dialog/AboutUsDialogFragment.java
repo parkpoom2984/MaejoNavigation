@@ -10,7 +10,7 @@ import android.util.Log;
  * Created by Teh on 5/21/2017.
  */
 
-public class AboutUsDialogFragment extends SimpleTextDialogFragment{
+public class AboutUsDialogFragment extends SimpleTextDialogFragment {
 
     @Override
     protected CharSequence getTitle() {
@@ -19,7 +19,11 @@ public class AboutUsDialogFragment extends SimpleTextDialogFragment{
 
     @Override
     protected CharSequence getMessage() {
-        return "Information Technology Division,"+System.getProperty ("line.separator")+"Faculty of Science,"+System.getProperty ("line.separator")+"Maejo University";
+        return "Information Technology Division," +
+                System.getProperty("line.separator") +
+                "Faculty of Science," +
+                System.getProperty("line.separator") +
+                "Maejo University";
     }
 
     @Override
@@ -46,12 +50,13 @@ public class AboutUsDialogFragment extends SimpleTextDialogFragment{
     private static Intent getOpenFacebookIntent(Context context) {
         try {
             context.getPackageManager()
-                    .getPackageInfo("com.facebook.katana", 0); //Checks if FB is even installed.
+                    .getPackageInfo("com.facebook.katana", 0);
             return new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("fb://page/720196448059091")); //Trys to make intent with FB's URI
+                    Uri.parse("fb://page/720196448059091"));
         } catch (Exception e) {
             return new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://www.facebook.com/IT.Major.MJU")); //catches and opens a url to the desired page
+                    Uri.parse(
+                            "https://www.facebook.com/IT.Major.MJU"));
         }
     }
 }

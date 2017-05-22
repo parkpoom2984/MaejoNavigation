@@ -34,6 +34,7 @@ import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +42,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -63,6 +65,7 @@ import th.ac.mju.maejonavigation.intent.MapIntent;
 import th.ac.mju.maejonavigation.model.Category;
 import th.ac.mju.maejonavigation.model.Locations;
 import th.ac.mju.maejonavigation.screen.main.MainActivity;
+import th.ac.mju.maejonavigation.unity.MapUtil;
 import th.ac.mju.maejonavigation.unity.SettingValues;
 
 import static android.R.id.list;
@@ -120,6 +123,11 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
         map.getUiSettings().setCompassEnabled(false);
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(SettingValues.getLatLngMaejo())
+                .zoom(15)
+                .build();
+        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override
@@ -172,8 +180,6 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
 
     @Override
     public void onLocationChanged(Location location) {
-        LatLng coordinate = new LatLng(location.getLatitude()
-                ,location.getLongitude());
         double lat = location.getLatitude();
         double lng = location.getLongitude();
         latLngCurrentLocation = new LatLng(lat,lng);
@@ -183,13 +189,6 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         int id = getResources().getIdentifier(SettingValues.SELF_MARKER, "drawable", getPackageName());
         markerCurrent = map.addMarker(new MarkerOptions().title("ตำแหน่งปัจจุบัน").position(latLngCurrentLocation).icon(
                 BitmapDescriptorFactory.fromResource(id)));
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(coordinate)
-                .zoom(17)
-                .bearing(90)
-                .tilt(30)
-                .build();
-        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     @Override
@@ -232,6 +231,13 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                         String duration = durationInfo.getText();
                         Snackbar.make(refreshMapFloatAction, "ห่างจากสถานที่นี้เป็นระยะทาง " + distance + System.getProperty ("line.separator")+"ระยะเวลา " + duration, Snackbar.LENGTH_LONG).show();
                         progressDialog.cancel();
+                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                        builder.include(latLngCurrentLocation);
+                        builder.include(destination);
+                        LatLngBounds bounds = builder.build();
+
+                        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds,100);
+                        map.animateCamera(cu);
                     }
 
                     @Override
@@ -323,11 +329,9 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
 
     @Override
     public void onClickPositiveButton(ArrayList<Integer> listPositionCategory) {
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
         map.clear();
         refreshMapFloatAction.setVisibility(View.GONE);
-        if(!listPositionCategory.isEmpty()){
-            isTypeAllLocation = true;
-        }
         List<Locations> listAllLocation = new ArrayList<>();
         for(Integer position : listPositionCategory){
             RealmResults<Locations> listLocation = getRealm().where(Locations.class).equalTo("categoryId",position).findAll();
@@ -335,13 +339,20 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                     listAllLocation.add(location);
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
+                    LatLng latLngLocation = new LatLng(lat, lng);
+                    builder.include(latLngLocation);
                     int id = getResources().getIdentifier(SettingValues.CATEGORY_MARKER+location.getCategoryId(), "drawable", getPackageName());
-                    map.addMarker(new MarkerOptions().position(new LatLng(lat, lng)).title(location.getLocationName() + "").icon(BitmapDescriptorFactory.fromResource(id)));
+                    map.addMarker(new MarkerOptions().position(latLngLocation).title(location.getLocationName() + "").icon(BitmapDescriptorFactory.fromResource(id)));
             }
         }
         setOnClickMarker(listAllLocation);
         setOnClickInfoMarker(listAllLocation);
-
+        if(!listPositionCategory.isEmpty()){
+            isTypeAllLocation = true;
+            LatLngBounds bounds = builder.build();
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 50);
+            map.animateCamera(cu);
+        }
     }
 
     @Override

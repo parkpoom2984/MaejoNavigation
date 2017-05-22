@@ -3,6 +3,8 @@ package th.ac.mju.maejonavigation.unity;
 import android.content.Context;
 import android.graphics.Typeface;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by Teh on 2/14/2017.
  */
@@ -14,26 +16,14 @@ public class SettingValues {
     public static final String SELF_MARKER = "self_logo_1";
     public static final String IMAGE_LOCATION_PATH = "http://itsci.mju.ac.th/MaejoNavigation/photoLocations/";
     public static String IMAGEFlOOR_PATH = "http://itsci.mju.ac.th/MaejoNavigation/imageFloor/";
-    //public static String LINK_URL_JSONSTATUS = "http://itsci.mju.ac.th/MjnActivity/JsonStatusServlet";
 
     public static final String DEFAULT_LOCATION_NAME = "มหาวิทยาลัยแม่โจ้";
-    public static final String DEFAULT_LOCATION_DETAIL = "มหาวิทยาลัยสีเขียว";
 
     public static Typeface GET_FONT(Context context){
         return Typeface.createFromAsset(context.getAssets(), "fonts/THSarabunNew Bold.ttf");
     }
 
-    //public static Locations GET_DEFAULT_LOCATION(){
-    //    //location.setLocationID(0);
-    //    //location.setLocationName("มหาวิทยาลัยแม่โจ้");
-    //    //location.setLocationDetails("มหาวิทยาลัยสีเขียว");
-    //    //location.setImageLocationPath("https://upload.wikimedia.org/wikipedia/commons/4/40/Sydney_Opera_House_Sails.jpg");
-    //    //location.setLatitude(0.0);
-    //    //location.setLongitude(0.0);
-    //    //location.setFavoriteStatus(-1);
-    //    return new Locations(0,);
-    //}
-    //public static String URLPATHMARKER = "http://maejonavit-thekitchen.rhcloud.com/markers/";
-    //public static String MYLOCATION = "http://maejonavit-thekitchen.rhcloud.com/markers/user.png";
-    //public static String IMAGEFlOOR_PATH = "http://itsci.mju.ac.th/MjnActivity/imageFloor/";
+    public static LatLng getLatLngMaejo(){
+        return new LatLng(18.896365, 99.013325);
+    }
 }
