@@ -169,20 +169,22 @@ public class PlanActivity extends MjnActivity implements PlanPresenter.View{
 
 
     public void drawImg(int width,int high){
-        drawBoard = board.copy(board.getConfig().RGB_565, true);
-        Rect rect = new Rect();
-        rect.set(250, 400, 300, 300);
+        if(width !=0 & high !=0) {
+            drawBoard = board.copy(board.getConfig().RGB_565, true);
+            Rect rect = new Rect();
+            rect.set(250, 400, 300, 300);
 
-        mCanvas = new Canvas(drawBoard);
-        Paint paint = new Paint();
+            mCanvas = new Canvas(drawBoard);
+            Paint paint = new Paint();
 
-        paint.setAntiAlias(true);
-        paint.setColor(Color.parseColor("#43A047"));
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(8.5f);
+            paint.setAntiAlias(true);
+            paint.setColor(Color.parseColor("#43A047"));
+            paint.setStyle(Paint.Style.FILL);
+            paint.setStrokeWidth(8.5f);
 
-        mCanvas.drawCircle((float)width,(float)high, 30, paint);
-        planImage.setImageBitmap(drawBoard);
+            mCanvas.drawCircle((float) width, (float) high, 30, paint);
+            planImage.setImageBitmap(drawBoard);
+        }
     }
 
     public void makeTableButton(final List<Room> listRoom) {
@@ -215,7 +217,6 @@ public class PlanActivity extends MjnActivity implements PlanPresenter.View{
                 }
             });
             tableRow.addView(button);
-
         }
     }
 
@@ -277,4 +278,21 @@ public class PlanActivity extends MjnActivity implements PlanPresenter.View{
         AdRequest adRequest = adBuilder.build();
         adView.loadAd(adRequest);
     }
+
+    //@Override
+    //protected void onSaveInstanceState(Bundle outState) {
+    //    super.onSaveInstanceState(outState);
+    //    outState.putParcelable("sss", Parcels.wrap(drawBoard));
+    //    outState.putParcelable("sss1", Parcels.wrap(board));
+    //}
+    //
+    //@Override
+    //protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    //    super.onRestoreInstanceState(savedInstanceState);
+    //    drawBoard = Parcels.unwrap(savedInstanceState.getParcelable("sss"));
+    //    board = Parcels.unwrap(savedInstanceState.getParcelable("sss1"));
+    //    if(drawBoard != null) {
+    //
+    //    }
+    //}
 }

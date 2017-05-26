@@ -61,5 +61,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         ads:adSize="SMART_BANNER"
-        ads:adUnitId="ca-app-pub-4743025835921005/7125252778" />
+        ads:adUnitId="@string/ad_unit_id" />
 </FrameLayout>

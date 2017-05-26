@@ -12,6 +12,10 @@ import android.support.v4.app.Fragment;
 import com.squareup.otto.Bus;
 
 import io.realm.Realm;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import th.ac.mju.maejonavigation.BuildConfig;
+import th.ac.mju.maejonavigation.request.MjnApi;
 
 
 /**
@@ -38,6 +42,14 @@ public abstract class MjnFragment extends Fragment{
 
     public static Bus getBus(){
         return bus;
+    }
+
+    public static MjnApi getService(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BuildConfig.MJN_API_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        return retrofit.create(MjnApi.class);
     }
 
     @Override

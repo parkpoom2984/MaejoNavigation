@@ -2,7 +2,6 @@ package th.ac.mju.maejonavigation.screen.map;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -14,7 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 
 import com.akexorcist.googledirection.DirectionCallback;
@@ -29,7 +27,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Result;
 import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -65,12 +62,9 @@ import th.ac.mju.maejonavigation.intent.MapIntent;
 import th.ac.mju.maejonavigation.model.Category;
 import th.ac.mju.maejonavigation.model.Locations;
 import th.ac.mju.maejonavigation.screen.main.MainActivity;
-import th.ac.mju.maejonavigation.unity.MapUtil;
 import th.ac.mju.maejonavigation.unity.SettingValues;
 
-import static android.R.id.list;
 import static th.ac.mju.maejonavigation.intent.MapIntent.LOCATION_DIRECTION;
-import static th.ac.mju.maejonavigation.intent.PlanIntent.FLOOR;
 
 public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
@@ -85,6 +79,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     @InjectView(R.id.refresh_map) FloatingActionButton refreshMapFloatAction;
     @InjectView(R.id.adView)
     AdView adView;
+    @InjectView(R.id.select_map) FloatingActionButton selectMapFloatAction;
     AlertDialog alert;
     SelectCategoryDialog selectCategoryDialog;
     @Override
@@ -139,6 +134,8 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         LocationAvailability locationAvailability =
                 LocationServices.FusedLocationApi.getLocationAvailability(googleApiClient);
         if (locationAvailability.isLocationAvailable()) {
+            refreshMapFloatAction.setVisibility(View.VISIBLE);
+            selectMapFloatAction.setVisibility(View.VISIBLE);
             LocationRequest locationRequest = new LocationRequest()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                     .setInterval(5000);
@@ -155,7 +152,15 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                 setOnClickInfoMarker(null);
             }
         } else {
-            // Do something when Locations Provider not available
+            refreshMapFloatAction.setVisibility(View.GONE);
+            selectMapFloatAction.setVisibility(View.GONE);
+            Snackbar.make(refreshMapFloatAction,"Internet wrong",Snackbar.LENGTH_INDEFINITE).setAction(
+                    "Try Agian", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            googleApiClient.connect();
+                        }
+                    }).show();
         }
     }
 
@@ -196,11 +201,16 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
 
     }
     private void makePolylineOptions(final Locations location){
+        if (markerCurrent != null) {
+            markerCurrent.remove();
+        }
+        int id = getResources().getIdentifier(SettingValues.SELF_MARKER, "drawable", getPackageName());
+        markerCurrent = map.addMarker(new MarkerOptions().title("ตำแหน่งปัจจุบัน").position(latLngCurrentLocation).icon(
+                BitmapDescriptorFactory.fromResource(id)));
         final ProgressDialog progressDialog = new ProgressDialog(MapActivity.this);
         progressDialog.setMessage("loading");
         progressDialog.show();
-        String serverKey = "AIzaSyCkpODGo-CgaB0NF-jqqh3jNSx4dOcbl9o";
-        //final LatLng origin = new LatLng(lat,lng);
+        String serverKey = getString(R.string.server_key);
         final LatLng destination = new LatLng(location.getLatitude(),location.getLongitude());
         GoogleDirection.withServerKey(serverKey)
                 .from(latLngCurrentLocation)
@@ -359,4 +369,19 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     public void onClickNeutralButton() {
 
     }
+
+    //@Override
+    //protected void onSaveInstanceState(Bundle outState) {
+    //    super.onSaveInstanceState(outState);
+    //    outState.putParcelable("sss", Parcels.wrap(alert));
+    //}
+    //
+    //@Override
+    //protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    //    super.onRestoreInstanceState(savedInstanceState);
+    //    profile = Parcels.unwrap(savedInstanceState.getParcelable("sss"));
+    //    if(profile != null) {
+    //        bus.post(profile);
+    //    }
+    //}
 }

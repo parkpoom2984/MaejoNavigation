@@ -1,6 +1,8 @@
 package th.ac.mju.maejonavigation.screen.main;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.design.widget.TabLayout;
 
@@ -36,9 +38,11 @@ import th.ac.mju.maejonavigation.dialog.Dialogs;
 import th.ac.mju.maejonavigation.event.SelectLocationEvent;
 import th.ac.mju.maejonavigation.intent.MapIntent;
 import th.ac.mju.maejonavigation.model.Locations;
+import th.ac.mju.maejonavigation.screen.addevent.AddEventActivity;
 import th.ac.mju.maejonavigation.screen.main.category.CategoryFragment;
 import th.ac.mju.maejonavigation.screen.main.detail.DetailFragment;
 
+import th.ac.mju.maejonavigation.screen.main.event.EventFragment;
 import th.ac.mju.maejonavigation.screen.main.favorite.FavoriteFragment;
 import th.ac.mju.maejonavigation.screen.main.location.LocationFragment;
 
@@ -55,7 +59,8 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
             R.drawable.category_logo_2,
             R.drawable.location_logo_2,
             R.drawable.detail_logo_1,
-            R.drawable.favorite_logo_1
+            R.drawable.favorite_logo_1,
+            R.drawable.ic_event_white
     };
 
     @InjectView(R.id.dashboard_toolbar)
@@ -66,10 +71,10 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
     TabLayout tabLayout;
     @InjectView(R.id.adView) AdView adView;
     private LocationFragment locationFragment;
-    int locationId;
-
+    private int locationId;
+    public int REQUEST_CODE = 12;
     public enum State {
-        CATEGORY_PAGE(0), LOCATION_PAGE(1), DETAIL_PAGE(2), FAVORITE_PAGE(3);
+        CATEGORY_PAGE(0), LOCATION_PAGE(1), DETAIL_PAGE(2), FAVORITE_PAGE(3) , EVENT_PAGE(4);
         private int position;
 
         State(int position) {
@@ -138,6 +143,8 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
                 return detailFragment;
             } else if(position == FAVORITE_PAGE.getPosition()){
                 return FavoriteFragment.newInstance();
+            } else if( position == EVENT_PAGE.getPosition()){
+                return new EventFragment();
             } else {
                 return null;
             }
@@ -207,5 +214,18 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
     @OnClick(R.id.main_logo)
     public void onClickLogo(){
         Dialogs.show(MainActivity.this, new AboutUsDialogFragment());
+    }
+
+
+    public void goTo(){
+        startActivityForResult(new Intent(MainActivity.this, AddEventActivity.class),REQUEST_CODE);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            if(resultCode == Activity.RESULT_OK){
+                Snackbar.make(mViewPager,"Add event already, We will process your request, and get back to you shortly.",Snackbar.LENGTH_LONG).show();
+            }
+        }
     }
 }

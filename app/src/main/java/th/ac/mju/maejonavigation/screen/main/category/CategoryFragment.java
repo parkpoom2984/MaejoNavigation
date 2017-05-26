@@ -48,7 +48,6 @@ public class CategoryFragment extends MjnFragment implements CategoryPresenter.V
     }
 
 
-
     @Override
     public void showListCategory(List<Category> listCategory) {
         CategoryAdapter categoryAdapter = new CategoryAdapter(listCategory,this);

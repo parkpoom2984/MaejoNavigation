@@ -14,10 +14,15 @@ import com.squareup.otto.Bus;
 
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import th.ac.mju.maejonavigation.BuildConfig;
 import th.ac.mju.maejonavigation.R;
+import th.ac.mju.maejonavigation.model.Category;
+import th.ac.mju.maejonavigation.model.Floor;
+import th.ac.mju.maejonavigation.model.Locations;
+import th.ac.mju.maejonavigation.model.Room;
 import th.ac.mju.maejonavigation.request.MjnApi;
 
 /**
@@ -29,6 +34,8 @@ public class MjnActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //RealmConfiguration config = new RealmConfiguration.Builder().build();
+        //Realm.setDefaultConfiguration(config);
         initRealm();
         initFabric();
     }

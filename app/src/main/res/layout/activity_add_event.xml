@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_add_event"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="th.ac.mju.maejonavigation.screen.addevent.AddEventActivity">
+
+
+    <android.support.v7.widget.Toolbar
+        android:title="กิจกรรม"
+        android:titleTextColor="@color/mjn_while"
+        android:id="@+id/add_event_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/mjn_primary"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    <LinearLayout
+        android:layout_below="@+id/add_event_toolbar"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:textStyle="bold"
+            android:text="ชื่อกิจกรรม"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/event_title_editText" />
+        <TextView
+            android:textStyle="bold"
+            android:text="วันที่จัดกิจกรรม"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/event_date_editText" />
+        <TextView
+            android:textStyle="bold"
+            android:text="รายละเอียดกิจกรรม"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView7" />
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/event_detail_editText" />
+        <TextView
+            android:textStyle="bold"
+            android:text="สถานที่จัดกิจกรรม"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView8" />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/event_location_spinner" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="?selectableItemBackground"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:gravity="center"
+            android:textColor="@color/mjn_while"
+            android:textStyle="bold"
+            android:text="เพิ่ม"
+            android:background="@color/mjn_primary"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_add_event" />
+    </FrameLayout>
+
+</RelativeLayout>
