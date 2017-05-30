@@ -13,12 +13,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:id="@+id/dialog_event_title"
             android:layout_margin="@dimen/activity_vertical_margin"
             android:textSize="16sp"
             android:textColor="@color/mjn_while"
             android:textStyle="bold"
             android:layout_gravity="center"
-            android:text="Select floor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -30,41 +30,53 @@
         android:layout_height="1dp"/>
 
     <LinearLayout
+        android:layout_margin="@dimen/activity_vertical_margin"
         android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <TextView
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold"
+            android:id="@+id/dialog_event_detail"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:id="@+id/location_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-        <com.goodiebag.horizontalpicker.HorizontalPicker
-            android:id="@+id/picker"
+        <TextView
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:id="@+id/dialog_event_date"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:textSize="18sp"
-            app:itemMargin="10dp"
-            app:itemHeight="40dp"
-            app:itemWidth="40dp"
-            android:background="?selectableItemBackground"
-            app:backgroundSelector="@drawable/floor_select"
-            app:textColorSelector="@color/mjn_while"/>
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:id="@+id/dialog_event_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/change_type_close"
-        android:background="?selectableItemBackground"
+    <LinearLayout
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:textColor="@color/mjn_primary"
-        android:text="CLOSE"
-        android:padding="@dimen/activity_vertical_margin"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/dialog_event_close"
+            android:background="?selectableItemBackground"
+            android:textColor="@color/mjn_primary"
+            android:text="CLOSE"
+            android:textStyle="bold"
+            android:padding="@dimen/activity_vertical_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/dialog_event_go_to_map"
+            android:background="?selectableItemBackground"
+            android:textColor="@color/mjn_primary"
+            android:text="GO TO MAP"
+            android:padding="@dimen/activity_vertical_margin"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </RelativeLayout>

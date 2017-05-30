@@ -20,20 +20,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import th.ac.mju.maejonavigation.R;
+import th.ac.mju.maejonavigation.dialog.EventDialog;
 import th.ac.mju.maejonavigation.fragment.MjnFragment;
-import th.ac.mju.maejonavigation.model.Category;
-import th.ac.mju.maejonavigation.model.DataStatus;
 import th.ac.mju.maejonavigation.model.Event;
-import th.ac.mju.maejonavigation.model.ListCategory;
 import th.ac.mju.maejonavigation.model.ListEvent;
-import th.ac.mju.maejonavigation.model.Locations;
-import th.ac.mju.maejonavigation.screen.addevent.AddEventActivity;
 import th.ac.mju.maejonavigation.screen.main.MainActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class EventFragment extends MjnFragment {
+
+public class EventFragment extends MjnFragment implements EventAdapter.CardOnClick {
 
     @InjectView(R.id.event_recycler_view)
     RecyclerView eventRecyclerView;
@@ -55,7 +49,7 @@ public class EventFragment extends MjnFragment {
             @Override
             public void onResponse(Call<ListEvent> call, Response<ListEvent> response) {
                 final List<Event> listEvent = response.body().getListEvent();
-                eventRecyclerView.setAdapter(new EventAdapter(listEvent,getRealm()));
+                setEventRecyclerView(listEvent);
             }
 
             @Override
@@ -66,9 +60,19 @@ public class EventFragment extends MjnFragment {
 
     }
 
+    public void setEventRecyclerView(List<Event> listEvent){
+        eventRecyclerView.setAdapter(new EventAdapter(listEvent,getRealm(),this));
+    }
+
 
     @OnClick(R.id.event_add)
     public void onClickAdd(){
         ((MainActivity)getActivity()).goTo();
+    }
+
+    @Override
+    public void onClickEvent(Event event) {
+        EventDialog dialog = new EventDialog(getContext(),event,getRealm());
+        dialog.show();
     }
 }

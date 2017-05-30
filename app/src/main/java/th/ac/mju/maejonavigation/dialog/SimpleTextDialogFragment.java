@@ -25,12 +25,6 @@ abstract class SimpleTextDialogFragment extends MjnDialogFragment{
                     onNegativeButtonClick(dialog, which);
                 }
             });
-            builder.setNeutralButton(getNeutralText(), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    onNeutralButtonClick(dialog, which);
-                }
-            });
             builder.setPositiveButton(getPositiveText(), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -50,17 +44,11 @@ abstract class SimpleTextDialogFragment extends MjnDialogFragment{
             return null;
         }
 
-        protected CharSequence getNeutralText() {
-            return null;
-        }
-
         protected CharSequence getPositiveText() {
             return getString(android.R.string.ok);
         }
 
         protected void onNegativeButtonClick(DialogInterface dialog, int which) {}
-
-        protected void onNeutralButtonClick(DialogInterface dialog, int which) {}
 
         protected void onPositiveButtonClick(DialogInterface dialog, int which) {}
 }

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    android:id="@+id/event_card_view"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_margin="5dp"
     android:clickable="true"
+    android:background="?android:selectableItemBackground"
     android:foreground="?android:attr/selectableItemBackground"
     card_view:cardCornerRadius="5dp"
     card_view:cardUseCompatPadding="true">
@@ -12,11 +15,30 @@
         android:layout_margin="@dimen/activity_vertical_margin"
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:background="?android:selectableItemBackground"
         android:gravity="center">
 
+        <LinearLayout
+            android:id="@+id/title_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_weight="40"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="หัวข้อกิจกรรม : "
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_weight="60"
+                android:layout_width="0dp"
+                android:id="@+id/event_title"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
 
     <LinearLayout
+        android:layout_below="@+id/title_box"
         android:id="@+id/date_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +47,7 @@
             android:layout_weight="40"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="วันที่ : "
+            android:text="ช่วงกิจกรรม : "
             android:textStyle="bold" />
 
         <TextView
@@ -36,29 +58,10 @@
             />
     </LinearLayout>
 
+
+
     <LinearLayout
         android:layout_below="@+id/date_box"
-        android:id="@+id/title_box"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_weight="40"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="หัวข้อกิจกรรม : "
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_weight="60"
-            android:layout_width="0dp"
-            android:id="@+id/event_title"
-            android:layout_height="wrap_content"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_below="@+id/title_box"
         android:id="@+id/location_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +70,7 @@
             android:layout_weight="40"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="สถานที่จัดงาน : "
+            android:text="สถานที่จัดกิจกรรม : "
             android:textStyle="bold" />
 
         <TextView
