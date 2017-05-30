@@ -54,12 +54,17 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
 import th.ac.mju.maejonavigation.dialog.SelectCategoryDialog;
 import th.ac.mju.maejonavigation.intent.MainIntent;
 import th.ac.mju.maejonavigation.intent.MapIntent;
 import th.ac.mju.maejonavigation.model.Category;
+import th.ac.mju.maejonavigation.model.Event;
+import th.ac.mju.maejonavigation.model.ListEvent;
 import th.ac.mju.maejonavigation.model.Locations;
 import th.ac.mju.maejonavigation.screen.main.MainActivity;
 import th.ac.mju.maejonavigation.unity.SettingValues;
@@ -71,6 +76,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         LocationListener,SelectCategoryDialog.View {
     private SupportMapFragment supportMapFragment;
     private GoogleApiClient googleApiClient;
+    private LatLngBounds.Builder builder;
     private GoogleMap map;
     private Marker markerCurrent;
     private LatLng latLngCurrentLocation;
@@ -82,11 +88,24 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     @InjectView(R.id.select_map) FloatingActionButton selectMapFloatAction;
     AlertDialog alert;
     SelectCategoryDialog selectCategoryDialog;
+    private List<Event> listEvent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.inject(this);
+        Call<ListEvent> callListEvent = getService().getListEvent();
+        callListEvent.enqueue(new Callback<ListEvent>() {
+            @Override
+            public void onResponse(Call<ListEvent> call, Response<ListEvent> response) {
+                listEvent = response.body().getListEvent();
+            }
+
+            @Override
+            public void onFailure(Call<ListEvent> call, Throwable t) {
+
+            }
+        });
         initAd();
         isTypeAllLocation = getIntent().getBooleanExtra(MapIntent.TYPE_ALL_LOCATION,false);
         locationDirection = Parcels.unwrap(this.getIntent().getParcelableExtra(LOCATION_DIRECTION));
@@ -107,7 +126,8 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         getRealm().executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<Category> listCategory = realm.where(Category.class).findAll();
+                RealmResults<Category> results = realm.where(Category.class).findAll();
+                List<Category> listCategory = realm.copyFromRealm(results);
                 selectCategoryDialog.create(listCategory);
                 alert = selectCategoryDialog.getBuilder().create();
             }
@@ -317,6 +337,20 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                             break;
                         }
                     }
+                    for(Event event : listEvent){
+                        if(markerName.equals(event.getEventName()))
+                        locationDirection = getRealm().where(Locations.class).equalTo("locationId",event.getLocationId()).findFirst();
+                        refreshMapFloatAction.setVisibility(View.VISIBLE);
+                        refreshMapFloatAction.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                onClickRefresh();
+                            }
+                        });
+                        makePolylineOptions(locationDirection);
+                        selectCategoryDialog.removeListPosition();
+                        break;
+                    }
                 }
                 return true;
             }
@@ -339,13 +373,28 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
 
     @Override
     public void onClickPositiveButton(ArrayList<Integer> listPositionCategory) {
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder = new LatLngBounds.Builder();
         map.clear();
         refreshMapFloatAction.setVisibility(View.GONE);
         List<Locations> listAllLocation = new ArrayList<>();
         for(Integer position : listPositionCategory){
             RealmResults<Locations> listLocation = getRealm().where(Locations.class).equalTo("categoryId",position).findAll();
-            for(Locations location : listLocation){
+            if(listLocation.size() == 0){
+                getRealm().executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        for(Event event : listEvent){
+                            Locations location = realm.where(Locations.class).equalTo("locationId",event.getLocationId()).findFirst();
+                            double lat = location.getLatitude();
+                            double lng = location.getLongitude();
+                            LatLng latLngLocation = new LatLng(lat, lng);
+                            builder.include(latLngLocation);
+                            map.addMarker(new MarkerOptions().position(latLngLocation).title(event.getEventName() + ""));
+                        }
+                    }
+                });
+            }else{
+                for(Locations location : listLocation){
                     listAllLocation.add(location);
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
@@ -353,6 +402,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                     builder.include(latLngLocation);
                     int id = getResources().getIdentifier(SettingValues.CATEGORY_MARKER+location.getCategoryId(), "drawable", getPackageName());
                     map.addMarker(new MarkerOptions().position(latLngLocation).title(location.getLocationName() + "").icon(BitmapDescriptorFactory.fromResource(id)));
+                }
             }
         }
         setOnClickMarker(listAllLocation);
@@ -369,19 +419,4 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     public void onClickNeutralButton() {
 
     }
-
-    //@Override
-    //protected void onSaveInstanceState(Bundle outState) {
-    //    super.onSaveInstanceState(outState);
-    //    outState.putParcelable("sss", Parcels.wrap(alert));
-    //}
-    //
-    //@Override
-    //protected void onRestoreInstanceState(Bundle savedInstanceState) {
-    //    super.onRestoreInstanceState(savedInstanceState);
-    //    profile = Parcels.unwrap(savedInstanceState.getParcelable("sss"));
-    //    if(profile != null) {
-    //        bus.post(profile);
-    //    }
-    //}
 }

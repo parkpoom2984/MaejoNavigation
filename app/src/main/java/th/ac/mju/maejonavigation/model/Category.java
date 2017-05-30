@@ -16,6 +16,11 @@ public class Category extends RealmObject{
 
     public Category() {}
 
+    public Category(int categoryId, String categoryName) {
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+    }
+
     @PrimaryKey
     @SerializedName("CategoryID")
     int categoryId;

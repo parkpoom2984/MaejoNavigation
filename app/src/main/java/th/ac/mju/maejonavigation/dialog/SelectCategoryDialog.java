@@ -28,27 +28,28 @@ public class SelectCategoryDialog{
     }
 
     public void create(final List<Category> listCategory){
+        listCategory.add(0,new Category(0,"กิจกรรม"));
         boolean index[] = new boolean[listCategory.size()];
         String[] listCategoryString = new String[listCategory.size()];
         for (int i = 0; i < listCategory.size(); i++) {
             listCategoryString[i] = listCategory.get(i).getCategoryName();
         }
-        builder.setTitle("Please Selecte Location");
+        builder.setTitle("Please Select Location");
         builder.setMultiChoiceItems(listCategoryString, index, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                int categoryId = listCategory.get(which).getCategoryId();
-                if (isChecked) {
-                    listPositionCategory.add(categoryId);
-                } else{
-                    for(int i=0;i<listPositionCategory.size();i++){
-                        if(listPositionCategory.get(i) == categoryId){
-                            listPositionCategory.remove(i);
-                            break;
+                    int categoryId = listCategory.get(which).getCategoryId();
+                    if (isChecked) {
+                        listPositionCategory.add(categoryId);
+                    } else {
+                        for (int i = 0; i < listPositionCategory.size(); i++) {
+                            if (listPositionCategory.get(i) == categoryId) {
+                                listPositionCategory.remove(i);
+                                break;
+                            }
                         }
                     }
                 }
-            }
         });
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

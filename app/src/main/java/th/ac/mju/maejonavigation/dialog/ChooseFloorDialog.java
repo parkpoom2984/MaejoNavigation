@@ -29,7 +29,7 @@ public class ChooseFloorDialog {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_choose_floor);
         dialog.setCancelable(false);
-        ImageView closeIcon = (ImageView) dialog.findViewById(R.id.change_type_close);
+        TextView closeIcon = (TextView) dialog.findViewById(R.id.change_type_close);
         TextView locationNameTextView = (TextView) dialog.findViewById(R.id.location_name);
         locationNameTextView.setText(locationName);
         HorizontalPicker hpText = (HorizontalPicker) dialog.findViewById(R.id.picker);
