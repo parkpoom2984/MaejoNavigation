@@ -43,24 +43,38 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="วันที่จัดกิจกรรม"
+                android:text="ช่วงจัดกิจกรรม"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/event_date_editText"
+            <LinearLayout
+                android:layout_margin="5dp"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="วันที่สิ้นสุดกิจกรรม"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/event_enddate_editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+                <TextView
+                    android:gravity="center"
+                    android:id="@+id/add_event_date_start"
+                    android:textColor="@color/vpi__background_holo_dark"
+                    android:background="@drawable/background_date"
+                    android:padding="10dp"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginRight="@dimen/activity_vertical_margin"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ถึง"
+                    android:textStyle="bold" />
+                <TextView
+                    android:gravity="center"
+                    android:id="@+id/add_event_date_end"
+                    android:textColor="@color/vpi__background_holo_dark"
+                    android:background="@drawable/background_date"
+                    android:padding="10dp"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textView7"
@@ -69,10 +83,26 @@
                 android:text="รายละเอียดกิจกรรม"
                 android:textStyle="bold" />
 
-            <AutoCompleteTextView
-                android:id="@+id/event_detail_editText"
+            <android.support.v7.widget.CardView
+                android:layout_margin="5dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+                <EditText
+                    android:layout_margin="8dp"
+                    android:id="@+id/event_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="top|left"
+                    android:inputType="textMultiLine"
+                    android:overScrollMode="always"
+                    android:scrollbarStyle="insideInset"
+                    android:scrollbars="vertical"
+                    android:lines="6"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:scrollHorizontally="false" />
+            </android.support.v7.widget.CardView>
+
 
             <TextView
                 android:id="@+id/textView8"
@@ -82,13 +112,13 @@
                 android:textStyle="bold" />
 
             <CheckBox
-                android:id="@+id/checkBox_to_list"
+                android:id="@+id/event_list_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="เลือกสถานที่ในรายการ" />
 
             <CheckBox
-                android:id="@+id/checkBox_to_map"
+                android:id="@+id/event_map_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="กำหนดสถานที่เอง" />
@@ -112,12 +142,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     tools:context=".viewMapsManager.MapsActivity"
-                    android:layout_margin="@dimen/activity_vertical_margin">
+                    android:layout_margin="5dp">
                     <TextView
+                        android:id="@+id/click_here"
                         android:textColor="@color/mjn_primary"
                         android:layout_gravity="center"
                         android:textStyle="bold"
-                        android:text="CLICK HERE"
+                        android:text="click here"
+                        android:textAllCaps="true"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
                 </fragment>
@@ -134,10 +166,11 @@
                     android:layout_height="wrap_content"
                     android:background="@color/mjn_primary"
                     android:gravity="center"
-                    android:padding="@dimen/activity_horizontal_margin"
+                    android:padding="@dimen/activity_vertical_margin"
                     android:text="เพิ่ม"
                     android:textColor="@color/mjn_while"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginBottom="@dimen/add_event_margin"/>
             </FrameLayout>
         </LinearLayout>
     </ScrollView>
