@@ -126,7 +126,8 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackground">
+                android:background="?selectableItemBackground"
+               >
 
                 <TextView
                     android:id="@+id/button_add_event"
@@ -137,7 +138,8 @@
                     android:padding="@dimen/activity_horizontal_margin"
                     android:text="เพิ่ม"
                     android:textColor="@color/mjn_while"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginBottom="@dimen/add_event_margin_bottom"/>
             </FrameLayout>
         </LinearLayout>
     </ScrollView>

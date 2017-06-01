@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -37,6 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -90,7 +92,7 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
     int year_x, month_x, day_x;
     int cDay, cMonth, cYear;
     static final int DILOG_ID = 0;
-
+    private LatLng newLatLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,57 +169,67 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
                 }
             }
         });
-
-
     }
-
 
     @OnClick(R.id.button_add_event)
     public void onClickAddEvent() {
         if (eventTitle.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Please enter event name", Toast.LENGTH_SHORT).show();
-            eventTitle.requestFocus();
-            return;
+            Toast.makeText(this, "please enter event name", Toast.LENGTH_SHORT).show();
         } else if (eventDate.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Please enter event date", Toast.LENGTH_SHORT).show();
-            eventDate.requestFocus();
-            return;
+            Toast.makeText(this, "please enter event start date", Toast.LENGTH_SHORT).show();
         } else if (eventendDate.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Please enter event end date", Toast.LENGTH_SHORT).show();
-            eventendDate.requestFocus();
-            return;
+            Toast.makeText(this, "please enter event end date", Toast.LENGTH_SHORT).show();
         } else if (eventDetail.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Please enter event detail", Toast.LENGTH_SHORT).show();
-            eventDetail.requestFocus();
-            return;
-        } else {
-            for (int i = 0; i < values.size(); i++) {
-                if (locationSelect.getSelectedItem().toString().equals(
-                        values.get(i).getLocationName())) {
-                    id = values.get(i).getLocationId();
-                    lat = values.get(i).getLatitude();
-                    lng = values.get(i).getLongitude();
-                    break;
-                }
-            }
+            Toast.makeText(this, "please enter event detail", Toast.LENGTH_SHORT).show();
+        } else if(!checkBox_to_list.isChecked() && !checkBox_to_map.isChecked() ){
+            Toast.makeText(this, "please select event location", Toast.LENGTH_SHORT).show();
+        } else if(checkBox_to_map.isChecked() && lat == 0 && lng == 0){
+            Toast.makeText(this, "please choose event location on map", Toast.LENGTH_SHORT).show();
+        }
+        else {
             String title = eventTitle.getText().toString();
-            String date = eventDate.getText().toString();
+            String startDate = eventDate.getText().toString();
+            String endDate = eventendDate.getText().toString();
             String detail = eventDetail.getText().toString();
-            String eventEndDate = eventDetail.getText().toString();
-
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("name", title);
                 jsonObject.put("detail", detail);
-                jsonObject.put("date", date);
-                jsonObject.put("location", id);
+                jsonObject.put("date", startDate);
                 jsonObject.put("status", 0);
-                jsonObject.put("eventEndDate", eventEndDate);
-                jsonObject.put("lat", lat);
-                jsonObject.put("lng", lng);
+                jsonObject.put("eventEndDate", endDate);
 
             } catch (JSONException e) {
                 e.printStackTrace();
+            }
+
+            if(checkBox_to_list.isChecked()){
+                for (int i = 0; i < values.size(); i++) {
+                    if (locationSelect.getSelectedItem().toString().equals(
+                            values.get(i).getLocationName())) {
+                        int id = values.get(i).getLocationId();
+                        lat = values.get(i).getLatitude();
+                        lng = values.get(i).getLongitude();
+                        try {
+                            Log.d("TestApp","here list");
+                            jsonObject.put("location", id);
+                            jsonObject.put("lat", null);
+                            jsonObject.put("lng", null);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            }else{
+                try {
+                    Log.d("TestApp","here map");
+                    jsonObject.put("location", null);
+                    jsonObject.put("lat", lat);
+                    jsonObject.put("lng", lng);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             Call<Void> callListCategory = getService().addEvent(jsonObject);
@@ -230,7 +242,7 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    Snackbar.make(eventDate, "can't request, try again.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(toolbar, "can't request, try again.", Snackbar.LENGTH_LONG).show();
                 }
             });
         }
@@ -268,56 +280,70 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
             Date today = Calendar.getInstance().getTime();
             String reportDate = df.format(today);
 
+
             year_x = year;
             month_x = monthOfYear + 1;
             day_x = dayOfMouth;
 
             //ตรวจสอบวันที่ตามเงื่อนที่กำหนด
-            if (year_x == cYear) {
-                if (month_x >= cMonth) {
-                    if (day_x >= cDay) {
-                        if (eventDate.hasFocus()) {
-                            Toast.makeText(AddEventActivity.this, year_x + " - " + month_x + " - " + day_x, Toast.LENGTH_SHORT).show();
+            if (eventDate.hasFocus()) {
+                if (year_x == cYear) {
+                    if (month_x >= cMonth) {
+                        if (day_x >= cDay) {
                             eventDate.setText(year_x + "-" + month_x + "-" + day_x);
+                        } else if (day_x < cDay) {
+                            if (month_x > cMonth) {
+                                eventDate.setText(year_x + "-" + month_x + "-" + day_x);
+                            }
                         } else {
-                            Toast.makeText(AddEventActivity.this, year_x + " - " + month_x + " - " + day_x, Toast.LENGTH_SHORT).show();
-                            eventendDate.setText(year_x + "-" + month_x + "-" + day_x);
-                        }
-                    } else {
-                        if (eventDate.hasFocus()) {
                             Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
                             eventDate.requestFocus();
                             return;
+                        }
+                    } else {
+
+                        Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
+                        eventDate.requestFocus();
+                        return;
+
+                    }
+
+                } else {
+                    Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
+                    eventDate.requestFocus();
+                    return;
+
+                }
+            } else if (eventendDate.hasFocus()) {
+                if (year_x == cYear) {
+                    if (month_x >= cMonth) {
+                        if (day_x >= cDay) {
+                            eventendDate.setText(year_x + "-" + month_x + "-" + day_x);
+                        } else if (day_x < cDay) {
+                            if (month_x > cMonth) {
+                                eventendDate.setText(year_x + "-" + month_x + "-" + day_x);
+                            }
                         } else {
                             Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
                             eventendDate.requestFocus();
                             return;
                         }
-                    }
-                } else {
-                    if (eventDate.hasFocus()) {
-                        Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
-                        eventDate.requestFocus();
-                        return;
                     } else {
                         Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
                         eventendDate.requestFocus();
                         return;
                     }
-                }
-
-            } else {
-                if (eventDate.hasFocus()) {
+                } else {
                     Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
                     eventDate.requestFocus();
                     return;
-                } else {
-                    Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
-                    eventendDate.requestFocus();
-                    return;
+
                 }
+
             }
         }
+
+
     };
 
     @OnClick(R.id.event_date_editText)
@@ -366,7 +392,7 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
             if (resultCode == Activity.RESULT_OK) {
                 map.clear();
                 map.addMarker(new MarkerOptions()
-                        .position(new LatLng(data.getDoubleExtra(LAT,0),data.getDoubleExtra(LNG,0))));
+                        .position(new LatLng(data.getDoubleExtra(LAT, 0), data.getDoubleExtra(LNG, 0))));
                 Snackbar.make(eventTitle, "Add Location already", Snackbar.LENGTH_LONG).show();
             }
         }
