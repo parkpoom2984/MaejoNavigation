@@ -55,7 +55,7 @@ public class EventDialog {
             @Override
             public void execute(Realm realm) {
                 Locations location = new Locations();
-                if(event.getLocationId() == 1){
+                if(event.getLocationId() == 0){
                     location.setIsEventLocation(true);
                     location.setLocationName(event.getEventName());
                     location.setLongitude(event.getLng());

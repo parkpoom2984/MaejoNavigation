@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -49,12 +50,7 @@ public class EventFragment extends MjnFragment implements EventAdapter.CardOnCli
             @Override
             public void onResponse(Call<ListEvent> call, Response<ListEvent> response) {
                 List<Event> listEvent = response.body().getListEvent();
-                for(int i=0;i<listEvent.size();i++){
-                    if(listEvent.get(i).getStatus() == 0){
-                        listEvent.remove(i);
-                    }
-                }
-                setEventRecyclerView(listEvent);
+                updateEventRecyclerView(listEvent);
             }
 
             @Override
@@ -63,6 +59,16 @@ public class EventFragment extends MjnFragment implements EventAdapter.CardOnCli
             }
         });
 
+    }
+
+    private void updateEventRecyclerView(List<Event> listEvent) {
+        List<Event> value = new ArrayList<>();
+        for(Event event : listEvent){
+            if(event.getStatus() == 1){
+                value.add(event);
+            }
+        }
+        setEventRecyclerView(value);
     }
 
     public void setEventRecyclerView(List<Event> listEvent){

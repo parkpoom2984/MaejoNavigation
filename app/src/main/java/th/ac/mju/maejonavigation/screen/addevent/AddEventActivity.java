@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -79,7 +80,8 @@ public class AddEventActivity extends MjnActivity
     private List<Locations> values;
     private DateSelect stateDate;
     private double lat, lng;
-
+    private Date dateStart;
+    private Date dateEnd;
     private enum DateSelect {
         START, END
     }
@@ -186,8 +188,6 @@ public class AddEventActivity extends MjnActivity
                     if (locationSelect.getSelectedItem().toString().equals(
                             locations.getLocationName())) {
                         int id = locations.getLocationId();
-                        //double lat = locations.getLatitude();
-                        //double lng = locations.getLongitude();
                         try {
                             jsonObject.put("name", title);
                             jsonObject.put("detail", detail);
@@ -195,8 +195,8 @@ public class AddEventActivity extends MjnActivity
                             jsonObject.put("location", id);
                             jsonObject.put("status", 0);
                             jsonObject.put("eventEndDate", endDate);
-                            jsonObject.put("lat", null);
-                            jsonObject.put("lng", null);
+                            jsonObject.put("lat", 0);
+                            jsonObject.put("lng", 0);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -207,7 +207,7 @@ public class AddEventActivity extends MjnActivity
                     jsonObject.put("name", title);
                     jsonObject.put("detail", detail);
                     jsonObject.put("date", startDate);
-                    jsonObject.put("location", null);
+                    jsonObject.put("location", 0);
                     jsonObject.put("status", 0);
                     jsonObject.put("eventEndDate", endDate);
                     jsonObject.put("lat", lat);
@@ -266,15 +266,28 @@ public class AddEventActivity extends MjnActivity
                         if (month > calendar.get(Calendar.MONTH)) {
                             if (stateDate == DateSelect.START) {
                                 dateStartEvent.setText(textDate);
+                                dateStart = date;
                             } else {
-                                dateEndEvent.setText(textDate);
+                                if(date.after(dateStart)){
+                                    dateEndEvent.setText(textDate);
+                                }else{
+                                    Toast.makeText(AddEventActivity.this, "please select end date after start",
+                                            Toast.LENGTH_LONG).show();
+                                }
                             }
                         } else if (month == calendar.get(Calendar.MONTH)) {
                             if (dayOfMonth >= calendar.get(Calendar.DAY_OF_MONTH)) {
                                 if (stateDate == DateSelect.START) {
                                     dateStartEvent.setText(textDate);
+                                    dateStart = date;
                                 } else {
-                                    dateEndEvent.setText(textDate);
+                                    if(date.after(dateStart)){
+                                        dateEndEvent.setText(textDate);
+                                        dateEnd = date;
+                                    }else{
+                                        Toast.makeText(AddEventActivity.this, "please select end date after start",
+                                                Toast.LENGTH_LONG).show();
+                                    }
                                 }
                             } else {
                                 Toast.makeText(AddEventActivity.this, "please select new date",
@@ -300,8 +313,13 @@ public class AddEventActivity extends MjnActivity
 
     @OnClick(R.id.add_event_date_end)
     public void onClickDateEnd() {
-        stateDate = DateSelect.END;
-        datePicker.show();
+        if(dateStartEvent.getText().toString().isEmpty()){
+            Toast.makeText(AddEventActivity.this, "please select start date first",
+                    Toast.LENGTH_LONG).show();
+        }else{
+            stateDate = DateSelect.END;
+            datePicker.show();
+        }
     }
 
     @Override
