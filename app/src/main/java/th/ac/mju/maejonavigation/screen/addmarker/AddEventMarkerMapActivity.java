@@ -1,10 +1,12 @@
-package th.ac.mju.maejonavigation.screen.addevent;
+package th.ac.mju.maejonavigation.screen.addmarker;
 
 
 import android.app.Activity;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,8 +52,13 @@ public class AddEventMarkerMapActivity extends MjnActivity implements OnMapReady
 
     @OnClick(R.id.button_add_event_marker_map)
     public void onClickAddEventLocationMarker() {
-        setResult(Activity.RESULT_OK, new AddEventIntent(this,newLatLng.latitude,newLatLng.longitude));
-        finish();
+        if(newLatLng != null){
+            setResult(Activity.RESULT_OK, new AddEventIntent(this,newLatLng.latitude,newLatLng.longitude));
+            finish();
+        }else{
+            Toast.makeText(this,"please choose location on the map first",Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
@@ -74,9 +81,15 @@ public class AddEventMarkerMapActivity extends MjnActivity implements OnMapReady
                 MarkerOptions markerOptions = new MarkerOptions()
                         .position(newLatLng);
                 markerEvent = map.addMarker(markerOptions);
-
             }
         });
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return true;
     }
 }

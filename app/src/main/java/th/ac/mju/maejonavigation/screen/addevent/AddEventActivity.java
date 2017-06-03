@@ -2,30 +2,21 @@ package th.ac.mju.maejonavigation.screen.addevent;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -38,12 +29,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -55,60 +44,60 @@ import retrofit2.Response;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
 import th.ac.mju.maejonavigation.model.Locations;
+import th.ac.mju.maejonavigation.screen.addmarker.AddEventMarkerMapActivity;
 import th.ac.mju.maejonavigation.unity.SettingValues;
 
+import static android.view.View.GONE;
 import static th.ac.mju.maejonavigation.intent.AddEventIntent.LAT;
 import static th.ac.mju.maejonavigation.intent.AddEventIntent.LNG;
 
-public class AddEventActivity extends MjnActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    @InjectView(R.id.event_date_editText)
-    TextView eventDate;
+public class AddEventActivity extends MjnActivity
+        implements OnMapReadyCallback {
     @InjectView(R.id.event_title_editText)
     TextView eventTitle;
     @InjectView(R.id.event_location_spinner)
     Spinner locationSelect;
-    @InjectView(R.id.event_detail_editText)
-    AutoCompleteTextView eventDetail;
     @InjectView(R.id.add_event_toolbar)
     Toolbar toolbar;
-    @InjectView(R.id.event_enddate_editText)
-    TextView eventendDate;
-    @InjectView(R.id.checkBox_to_list)
-    CheckBox checkBox_to_list;
-    @InjectView(R.id.checkBox_to_map)
-    CheckBox checkBox_to_map;
-
+    @InjectView(R.id.event_list_checkbox)
+    CheckBox addEventSelectListCheckbox;
+    @InjectView(R.id.event_map_checkbox)
+    CheckBox addEventSelectMapCheckbox;
+    @InjectView(R.id.add_event_date_end)
+    TextView dateEndEvent;
+    @InjectView(R.id.add_event_date_start)
+    TextView dateStartEvent;
+    @InjectView(R.id.event_detail)
+    EditText detailEvent;
+    @InjectView(R.id.click_here)
+    TextView addEventClickHere;
     private SupportMapFragment supportMapFragment;
-    private GoogleApiClient googleApiClient;
     private GoogleMap map;
-
-
+    private Calendar calendar;
+    private DatePickerDialog datePicker;
     public int REQUEST_CODE = 15;
-
-    private int id;
-    private double lat;
-    private double lng;
     private List<Locations> values;
-    int year_x, month_x, day_x;
-    int cDay, cMonth, cYear;
-    static final int DILOG_ID = 0;
-    private LatLng newLatLng;
+    private DateSelect stateDate;
+    private double lat, lng;
+
+    private enum DateSelect {
+        START, END
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
         ButterKnife.inject(this);
-
-        final Calendar cal = Calendar.getInstance();
-        year_x = cal.get(Calendar.YEAR);
-        month_x = cal.get(Calendar.MONTH);
-        day_x = cal.get(Calendar.DAY_OF_MONTH);
+        calendar = Calendar.getInstance();
+        datePicker = new DatePickerDialog(this, onDateSetListener, calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.mjn_while));
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Event");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_close_white));
+        getSupportActionBar().setHomeAsUpIndicator(
+                ContextCompat.getDrawable(this, R.drawable.ic_close_white));
         getRealm().executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -121,110 +110,106 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
             }
         });
 
-        supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(
+                R.id.map);
         supportMapFragment.getMapAsync(this);
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-        googleApiClient.connect();
 
 
         //เมื่อเลือก checkbox ที่แสดงรายการ
-        locationSelect.setVisibility(View.GONE); //ซ่อน spinner จากหน้าจอ
-        supportMapFragment.getView().setVisibility(View.GONE);
-        checkBox_to_list.setOnClickListener(new View.OnClickListener() {
+        locationSelect.setVisibility(GONE); //ซ่อน spinner จากหน้าจอ
+        supportMapFragment.getView().setVisibility(GONE);
+        addEventSelectListCheckbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkBox_to_list.isChecked() == true) { //เมื่อเลือก checkbox แสดงรายการ
-                    checkBox_to_map.setChecked(false);
-                    locationSelect.setVisibility(View.VISIBLE); //แสดง spinner เมื่อเลือก checkbox นี้
-                    supportMapFragment.getView().setVisibility(View.GONE);  //ซ่อนแผนที่ เมื่อเลือก checkbox นี้
+                if (addEventSelectListCheckbox.isChecked()) { //เมื่อเลือก checkbox แสดงรายการ
+                    addEventSelectMapCheckbox.setChecked(false);
+                    locationSelect.setVisibility(
+                            View.VISIBLE); //แสดง spinner เมื่อเลือก checkbox นี้
+                    supportMapFragment.getView().setVisibility(
+                            GONE);  //ซ่อนแผนที่ เมื่อเลือก checkbox นี้
                 } else {
-                    locationSelect.setVisibility(View.GONE);
+                    locationSelect.setVisibility(GONE);
                 }
             }
         });
 
         //เมื่อเลือก checkbox ที่แสดงแผนที่
-        checkBox_to_map.setOnClickListener(new View.OnClickListener() {
+        addEventSelectMapCheckbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkBox_to_map.isChecked() == true) {    //เมื่อเลือก checkbox แสดงแผนที่
-                    checkBox_to_list.setChecked(false);
-                    locationSelect.setVisibility(View.GONE);
+                if (addEventSelectMapCheckbox.isChecked()) {    //เมื่อเลือก checkbox แสดงแผนที่
+                    addEventSelectListCheckbox.setChecked(false);
+                    locationSelect.setVisibility(GONE);
                     supportMapFragment.getView().setVisibility(View.VISIBLE);
 
                     map.getUiSettings().setAllGesturesEnabled(true);
                     map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                         @Override
                         public void onMapClick(LatLng latLng) {
-                            Intent intent = new Intent(AddEventActivity.this, AddEventMarkerMapActivity.class);
+                            Intent intent = new Intent(AddEventActivity.this,
+                                    AddEventMarkerMapActivity.class);
                             startActivityForResult(intent, REQUEST_CODE);
                         }
                     });
                 } else {
-                    supportMapFragment.getView().setVisibility(View.GONE);
+                    supportMapFragment.getView().setVisibility(GONE);
                 }
             }
         });
+
     }
+
 
     @OnClick(R.id.button_add_event)
     public void onClickAddEvent() {
         if (eventTitle.getText().toString().isEmpty()) {
             Toast.makeText(this, "please enter event name", Toast.LENGTH_SHORT).show();
-        } else if (eventDate.getText().toString().isEmpty()) {
+        } else if (dateStartEvent.getText().toString().isEmpty()) {
             Toast.makeText(this, "please enter event start date", Toast.LENGTH_SHORT).show();
-        } else if (eventendDate.getText().toString().isEmpty()) {
+        } else if (dateEndEvent.getText().toString().isEmpty()) {
             Toast.makeText(this, "please enter event end date", Toast.LENGTH_SHORT).show();
-        } else if (eventDetail.getText().toString().isEmpty()) {
+        } else if (detailEvent.getText().toString().isEmpty()) {
             Toast.makeText(this, "please enter event detail", Toast.LENGTH_SHORT).show();
-        } else if(!checkBox_to_list.isChecked() && !checkBox_to_map.isChecked() ){
+        } else if (!addEventSelectListCheckbox.isChecked() &&
+                !addEventSelectMapCheckbox.isChecked()) {
             Toast.makeText(this, "please select event location", Toast.LENGTH_SHORT).show();
-        } else if(checkBox_to_map.isChecked() && lat == 0 && lng == 0){
+        } else if (addEventSelectMapCheckbox.isChecked() && lat == 0 && lng == 0) {
             Toast.makeText(this, "please choose event location on map", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        } else {
             String title = eventTitle.getText().toString();
-            String startDate = eventDate.getText().toString();
-            String endDate = eventendDate.getText().toString();
-            String detail = eventDetail.getText().toString();
+            String startDate = dateStartEvent.getText().toString();
+            String endDate = dateEndEvent.getText().toString();
+            String detail = detailEvent.getText().toString();
             JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put("name", title);
-                jsonObject.put("detail", detail);
-                jsonObject.put("date", startDate);
-                jsonObject.put("status", 0);
-                jsonObject.put("eventEndDate", endDate);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            if(checkBox_to_list.isChecked()){
-                for (int i = 0; i < values.size(); i++) {
+            if (addEventSelectListCheckbox.isChecked()) {
+                for (Locations locations : values) {
                     if (locationSelect.getSelectedItem().toString().equals(
-                            values.get(i).getLocationName())) {
-                        int id = values.get(i).getLocationId();
-                        lat = values.get(i).getLatitude();
-                        lng = values.get(i).getLongitude();
+                            locations.getLocationName())) {
+                        int id = locations.getLocationId();
+                        //double lat = locations.getLatitude();
+                        //double lng = locations.getLongitude();
                         try {
-                            Log.d("TestApp","here list");
+                            jsonObject.put("name", title);
+                            jsonObject.put("detail", detail);
+                            jsonObject.put("date", startDate);
                             jsonObject.put("location", id);
-                            jsonObject.put("lat", null);
-                            jsonObject.put("lng", null);
+                            jsonObject.put("status", 0);
+                            jsonObject.put("eventEndDate", endDate);
+                            jsonObject.put("lat", 0);
+                            jsonObject.put("lng", 0);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        break;
                     }
                 }
-            }else{
+            } else {
                 try {
-                    Log.d("TestApp","here map");
-                    jsonObject.put("location", null);
+                    jsonObject.put("name", title);
+                    jsonObject.put("detail", detail);
+                    jsonObject.put("date", startDate);
+                    jsonObject.put("location", 0);
+                    jsonObject.put("status", 0);
+                    jsonObject.put("eventEndDate", endDate);
                     jsonObject.put("lat", lat);
                     jsonObject.put("lng", lng);
                 } catch (JSONException e) {
@@ -242,7 +227,8 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    Snackbar.make(toolbar, "can't request, try again.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(toolbar, "can't request, try again.", Snackbar.LENGTH_LONG)
+                            .show();
                 }
             });
         }
@@ -254,7 +240,8 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
         for (int i = 0; i < values.size(); i++) {
             list[i] = values.get(i).getLocationName();
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, list);
         locationSelect.setAdapter(adapter);
     }
 
@@ -266,112 +253,55 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
         return true;
     }
 
-
-    private DatePickerDialog.OnDateSetListener dpickerListner
-            = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMouth) {
-            Calendar localCalendar = Calendar.getInstance(TimeZone.getDefault());
-            cDay = localCalendar.get(Calendar.DAY_OF_MONTH);
-            cMonth = localCalendar.get(Calendar.MONTH) + 1;
-            cYear = localCalendar.get(Calendar.YEAR);
-
-            DateFormat df = new SimpleDateFormat("yyy/mm/dd"); //Day and Time present
-            Date today = Calendar.getInstance().getTime();
-            String reportDate = df.format(today);
-
-
-            year_x = year;
-            month_x = monthOfYear + 1;
-            day_x = dayOfMouth;
-
-            //ตรวจสอบวันที่ตามเงื่อนที่กำหนด
-            if (eventDate.hasFocus()) {
-                if (year_x == cYear) {
-                    if (month_x >= cMonth) {
-                        if (day_x >= cDay) {
-                            eventDate.setText(year_x + "-" + month_x + "-" + day_x);
-                        } else if (day_x < cDay) {
-                            if (month_x > cMonth) {
-                                eventDate.setText(year_x + "-" + month_x + "-" + day_x);
+    private DatePickerDialog.OnDateSetListener onDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                    DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                    Calendar calendarSelect = Calendar.getInstance();
+                    calendarSelect.set(year,month,dayOfMonth);
+                    Date date = calendarSelect.getTime();
+                    String textDate = dateFormat.format(date);
+                    if (year >= calendar.get(Calendar.YEAR)) {
+                        if (month > calendar.get(Calendar.MONTH)) {
+                            if (stateDate == DateSelect.START) {
+                                dateStartEvent.setText(textDate);
+                            } else {
+                                dateEndEvent.setText(textDate);
+                            }
+                        } else if (month == calendar.get(Calendar.MONTH)) {
+                            if (dayOfMonth >= calendar.get(Calendar.DAY_OF_MONTH)) {
+                                if (stateDate == DateSelect.START) {
+                                    dateStartEvent.setText(textDate);
+                                } else {
+                                    dateEndEvent.setText(textDate);
+                                }
+                            } else {
+                                Toast.makeText(AddEventActivity.this, "please select new date",
+                                        Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
-                            eventDate.requestFocus();
-                            return;
+                            Toast.makeText(AddEventActivity.this, "please select new date",
+                                    Toast.LENGTH_LONG).show();
                         }
+
                     } else {
-
-                        Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
-                        eventDate.requestFocus();
-                        return;
-
+                        Toast.makeText(AddEventActivity.this, "please select new date",
+                                Toast.LENGTH_LONG).show();
                     }
-
-                } else {
-                    Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
-                    eventDate.requestFocus();
-                    return;
-
                 }
-            } else if (eventendDate.hasFocus()) {
-                if (year_x == cYear) {
-                    if (month_x >= cMonth) {
-                        if (day_x >= cDay) {
-                            eventendDate.setText(year_x + "-" + month_x + "-" + day_x);
-                        } else if (day_x < cDay) {
-                            if (month_x > cMonth) {
-                                eventendDate.setText(year_x + "-" + month_x + "-" + day_x);
-                            }
-                        } else {
-                            Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
-                            eventendDate.requestFocus();
-                            return;
-                        }
-                    } else {
-                        Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
-                        eventendDate.requestFocus();
-                        return;
-                    }
-                } else {
-                    Toast.makeText(AddEventActivity.this, "Please Enter Date New", Toast.LENGTH_SHORT).show();
-                    eventDate.requestFocus();
-                    return;
+            };
 
-                }
-
-            }
-        }
-
-
-    };
-
-    @OnClick(R.id.event_date_editText)
-    public void onClickDateEditText() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-        showDialog(DILOG_ID);
+    @OnClick(R.id.add_event_date_start)
+    public void onClickDateStart() {
+        stateDate = DateSelect.START;
+        datePicker.show();
     }
 
-    @OnClick(R.id.event_enddate_editText)
-    public void onClickEndDateEditText() {
-        View view = this.getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-        showDialog(DILOG_ID);
-    }
-
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        if (id == DILOG_ID)
-            return new DatePickerDialog(this, dpickerListner, year_x, month_x, day_x);
-        return null;
-
+    @OnClick(R.id.add_event_date_end)
+    public void onClickDateEnd() {
+        stateDate = DateSelect.END;
+        datePicker.show();
     }
 
     @Override
@@ -391,25 +321,19 @@ public class AddEventActivity extends MjnActivity implements OnMapReadyCallback,
         if (requestCode == REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 map.clear();
+                lat = data.getDoubleExtra(LAT, 0);
+                lng = data.getDoubleExtra(LNG, 0);
+                addEventClickHere.setVisibility(View.GONE);
+                LatLng latLng = new LatLng(lat, lng);
                 map.addMarker(new MarkerOptions()
-                        .position(new LatLng(data.getDoubleExtra(LAT, 0), data.getDoubleExtra(LNG, 0))));
-                Snackbar.make(eventTitle, "Add Location already", Snackbar.LENGTH_LONG).show();
+                        .position(latLng));
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(latLng)
+                        .zoom(15)
+                        .build();
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                Snackbar.make(eventTitle, "Add location already", Snackbar.LENGTH_LONG).show();
             }
         }
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 }

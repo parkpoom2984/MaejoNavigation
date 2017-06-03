@@ -68,7 +68,7 @@
         <activity
             android:name=".screen.addevent.AddEventActivity"
             android:theme="@style/AppTheme.StatusColor"/>
-        <activity android:name=".screen.addevent.AddEventMarkerMapActivity"
+        <activity android:name=".screen.addmarker.AddEventMarkerMapActivity"
             android:theme="@style/AppTheme.StatusColor"/>
     </application>
 

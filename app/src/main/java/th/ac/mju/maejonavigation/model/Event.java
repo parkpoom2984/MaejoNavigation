@@ -16,11 +16,17 @@ public class Event {
     @SerializedName("eventDetail")
     String eventDetail;
     @SerializedName("eventDate")
-    String eventDate;
+    String eventStartDate;
     @SerializedName("locationID")
     int locationId;
     @SerializedName("status")
     int status;
+    @SerializedName("eventEndDate")
+    String eventEndDate;
+    @SerializedName("lat")
+    double lat;
+    @SerializedName("lng")
+    double lng;
 
     public int getEventId() {
         return eventId;
@@ -34,8 +40,8 @@ public class Event {
         return eventDetail;
     }
 
-    public String getEventDate() {
-        return eventDate;
+    public String getEventStartDate() {
+        return eventStartDate;
     }
 
     public int getLocationId() {
@@ -44,5 +50,17 @@ public class Event {
 
     public int getStatus() {
         return status;
+    }
+
+    public String getEventEndDate() {
+        return eventEndDate;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public double getLng() {
+        return lng;
     }
 }

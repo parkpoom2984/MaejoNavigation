@@ -49,13 +49,17 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Event event = listEvent.get(position);
         holder.cardEvent.setTag(event);
-        holder.eventDate.setText(event.getEventDate());
+        holder.eventDate.setText(event.getEventStartDate()+ " ถึง "+event.getEventEndDate());
         holder.eventTitle.setText(event.getEventName());
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Locations location = realm.where(Locations.class).equalTo("locationId",event.getLocationId()).findFirst();
-                holder.eventLocation.setText(location.getLocationName());
+                if(event.getLocationId() == 1){
+                    holder.eventLocation.setText("กำหนดพิกัดผ่านแผนที่");
+                }else{
+                    Locations location = realm.where(Locations.class).equalTo("locationId",event.getLocationId()).findFirst();
+                    holder.eventLocation.setText(location.getLocationName());
+                }
             }
         });
     }

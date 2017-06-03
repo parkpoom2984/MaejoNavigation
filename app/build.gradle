@@ -25,7 +25,8 @@ android {
         targetSdkVersion 22
         def STRING = "String"
         def MJN_API_BASE_URL = "MJN_API_BASE_URL"
-        buildConfigField STRING, MJN_API_BASE_URL, "\"http://www.itsci.mju.ac.th/MaejoNavigation/\""
+        buildConfigField STRING, MJN_API_BASE_URL, "\"http://192.168.1.15:8080/MaejoNavigation/\""
+//        buildConfigField STRING, MJN_API_BASE_URL, "\"http://www.itsci.mju.ac.th/MaejoNavigation/\""
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

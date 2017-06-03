@@ -38,8 +38,8 @@ public class Locations extends RealmObject implements Serializable{
     @SerializedName("listFloor")
     RealmList<Floor> listFloor = new RealmList<>();
 
-    int categoryId;
-
+    private int categoryId;
+    private boolean isEventLocation = false;
     public int getCategoryId() {
         return categoryId;
     }
@@ -114,5 +114,13 @@ public class Locations extends RealmObject implements Serializable{
 
     public void setFavoriteStatus(int favoriteStatus) {
         this.favoriteStatus = favoriteStatus;
+    }
+
+    public boolean getIsEventLocation() {
+        return isEventLocation;
+    }
+
+    public void setIsEventLocation(boolean isEventLocation) {
+        this.isEventLocation = isEventLocation;
     }
 }

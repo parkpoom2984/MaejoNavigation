@@ -54,9 +54,22 @@ public class EventDialog {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Locations location = realm.where(Locations.class).equalTo("locationId",event.getLocationId()).findFirst();
+                Locations location = new Locations();
+                if(event.getLocationId() == 1){
+                    location.setIsEventLocation(true);
+                    location.setLocationName(event.getEventName());
+                    location.setLongitude(event.getLng());
+                    location.setLatitude(event.getLat());
+                    updateUI("กำหนดพิกัดผ่านแผนที่");
+                }else{
+                    Locations locationEvent = realm.where(Locations.class).equalTo("locationId",event.getLocationId()).findFirst();
+                    location.setIsEventLocation(true);
+                    location.setLocationName(event.getEventName());
+                    location.setLongitude(locationEvent.getLongitude());
+                    location.setLatitude(locationEvent.getLatitude());
+                    updateUI(location.getLocationName());
+                }
                 goToMapIcon.setTag(location);
-                updateUI(location.getLocationName());
             }
         });
 
@@ -88,7 +101,7 @@ public class EventDialog {
         Context context = dialog.getContext();
         titleEvent.setText(event.getEventName());
         locationEvent.setText(context.getResources().getString(R.string.event_location,locationName));
-        dateEvent.setText(context.getResources().getString(R.string.event_date,event.getEventDate(),event.getEventDate()));
+        dateEvent.setText(context.getResources().getString(R.string.event_date,event.getEventStartDate(),event.getEventEndDate()));
         detailEvent.setText(context.getResources().getString(R.string.event_detail,event.getEventDetail()));
     }
 }

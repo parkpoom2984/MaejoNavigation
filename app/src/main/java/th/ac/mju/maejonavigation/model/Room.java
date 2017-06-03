@@ -4,8 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import org.parceler.Parcel;
 
-import io.realm.FloorRealmProxy;
-import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RoomRealmProxy;
 import io.realm.annotations.PrimaryKey;
