@@ -4,7 +4,6 @@ package th.ac.mju.maejonavigation.screen.main.category;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,6 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-
-import io.realm.Realm;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.event.SelectCategoryEvent;
 import th.ac.mju.maejonavigation.fragment.MjnFragment;
@@ -24,7 +21,8 @@ import th.ac.mju.maejonavigation.screen.main.MainActivity;
 import static th.ac.mju.maejonavigation.screen.main.MainActivity.State.LOCATION_PAGE;
 
 
-public class CategoryFragment extends MjnFragment implements CategoryPresenter.View,CategoryAdapter.CategoryClick {
+public class CategoryFragment extends MjnFragment
+        implements CategoryPresenter.View, CategoryAdapter.CategoryClick {
 
 
     @InjectView(R.id.category_recycler_view)
@@ -35,7 +33,7 @@ public class CategoryFragment extends MjnFragment implements CategoryPresenter.V
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_category, container, false);
-        ButterKnife.inject(this,view);
+        ButterKnife.inject(this, view);
 
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -50,13 +48,13 @@ public class CategoryFragment extends MjnFragment implements CategoryPresenter.V
 
     @Override
     public void showListCategory(List<Category> listCategory) {
-        CategoryAdapter categoryAdapter = new CategoryAdapter(listCategory,this);
+        CategoryAdapter categoryAdapter = new CategoryAdapter(listCategory, this);
         mRecyclerView.setAdapter(categoryAdapter);
     }
 
     @Override
     public void onClick(Category category) {
         getBus().post(new SelectCategoryEvent(category));
-        ((MainActivity)getActivity()).switchTabTo(LOCATION_PAGE.getPosition());
+        ((MainActivity) getActivity()).switchTabTo(LOCATION_PAGE.getPosition());
     }
 }

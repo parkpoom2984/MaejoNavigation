@@ -19,12 +19,12 @@ public class LocationPresenter {
     private View view;
     private static final String CATEGORY_ID = "categoryId";
 
-    public void create(View view,Realm realm) {
+    public void create(View view, Realm realm) {
         this.view = view;
         this.realm = realm;
     }
 
-    public void queryListLocation(){
+    public void queryListLocation() {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -35,19 +35,20 @@ public class LocationPresenter {
         });
     }
 
-    public void queryListLocationByCategory(final int categoryId){
+    public void queryListLocationByCategory(final int categoryId) {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-               Category category = realm.where(Category.class).equalTo(CATEGORY_ID,categoryId)
+                Category category = realm.where(Category.class).equalTo(CATEGORY_ID, categoryId)
                         .findFirstAsync();
                 view.showListLocationByCategory(category.getListLocation());
             }
         });
     }
 
-    interface View{
+    interface View {
         void showListLocation(List<Locations> listLocation);
+
         void showListLocationByCategory(List<Locations> listLocationByCategory);
     }
 }

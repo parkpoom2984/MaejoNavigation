@@ -1,15 +1,11 @@
 package th.ac.mju.maejonavigation.screen.main.event;
 
-import android.location.Location;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -17,7 +13,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.realm.Realm;
 import th.ac.mju.maejonavigation.R;
-import th.ac.mju.maejonavigation.model.Category;
 import th.ac.mju.maejonavigation.model.Event;
 import th.ac.mju.maejonavigation.model.Locations;
 
@@ -30,7 +25,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     private List<Event> listEvent;
     private Realm realm;
     private CardOnClick listener;
-    public EventAdapter(List<Event> listEvent,Realm realm,CardOnClick listener) {
+    private static final String LOCATION_ID_FIELD = "locationId";
+
+    public EventAdapter(List<Event> listEvent, Realm realm, CardOnClick listener) {
         this.listEvent = listEvent;
         this.realm = realm;
         this.listener = listener;
@@ -38,7 +35,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View card_view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_event,null);
+        View card_view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_event,
+                null);
         ViewHolder viewHolder = new ViewHolder(card_view);
         card_view.setOnClickListener(this);
         viewHolder.cardEvent.setOnClickListener(this);
@@ -49,15 +47,16 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Event event = listEvent.get(position);
         holder.cardEvent.setTag(event);
-        holder.eventDate.setText(event.getEventStartDate()+ " ถึง "+event.getEventEndDate());
+        holder.eventDate.setText(event.getEventStartDate() + " ถึง " + event.getEventEndDate());
         holder.eventTitle.setText(event.getEventName());
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                if(event.getLocationId() == 1){
+                if (event.getLocationId() == 1) {
                     holder.eventLocation.setText("กำหนดพิกัดผ่านแผนที่");
-                }else{
-                    Locations location = realm.where(Locations.class).equalTo("locationId",event.getLocationId()).findFirst();
+                } else {
+                    Locations location = realm.where(Locations.class).equalTo(LOCATION_ID_FIELD,
+                            event.getLocationId()).findFirst();
                     holder.eventLocation.setText(location.getLocationName());
                 }
             }
@@ -76,18 +75,23 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
-        @InjectView(R.id.event_date) TextView eventDate;
-        @InjectView(R.id.event_location) TextView eventLocation;
-        @InjectView(R.id.event_title) TextView eventTitle;
-        @InjectView(R.id.event_card_view) CardView cardEvent;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        @InjectView(R.id.event_date)
+        TextView eventDate;
+        @InjectView(R.id.event_location)
+        TextView eventLocation;
+        @InjectView(R.id.event_title)
+        TextView eventTitle;
+        @InjectView(R.id.event_card_view)
+        CardView cardEvent;
+
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.inject(this,itemView);
+            ButterKnife.inject(this, itemView);
         }
     }
 
-    interface CardOnClick{
+    interface CardOnClick {
         void onClickEvent(Event event);
     }
 }

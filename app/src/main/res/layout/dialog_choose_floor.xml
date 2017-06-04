@@ -1,70 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_gravity="center"
-    android:orientation="vertical"
-    android:background="@color/mjn_while"
     android:layout_width="300dp"
-    android:layout_height="240dp">
+    android:layout_height="240dp"
+    android:layout_gravity="center"
+    android:background="@color/mjn_while"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/head_box"
-        android:background="@color/mjn_primary"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/mjn_primary">
+
         <TextView
-            android:layout_margin="@dimen/activity_vertical_margin"
-            android:textSize="16sp"
-            android:textColor="@color/mjn_while"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:text="Select floor"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:text="Select floor"
+            android:textColor="@color/mjn_while"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <View
-        android:layout_below="@+id/head_box"
-        android:background="@color/mjn_default_gray"
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp"
+        android:layout_below="@+id/head_box"
+        android:background="@color/mjn_default_gray" />
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
 
         <TextView
-            android:layout_gravity="center_horizontal"
-            android:textStyle="bold"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:id="@+id/location_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:textStyle="bold" />
+
         <com.goodiebag.horizontalpicker.HorizontalPicker
             android:id="@+id/picker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:textSize="18sp"
-            app:itemMargin="10dp"
-            app:itemHeight="40dp"
-            app:itemWidth="40dp"
             android:background="?selectableItemBackground"
             app:backgroundSelector="@drawable/floor_select"
-            app:textColorSelector="@color/mjn_while"/>
+            app:itemHeight="40dp"
+            app:itemMargin="10dp"
+            app:itemWidth="40dp"
+            app:textColorSelector="@color/mjn_while"
+            app:textSize="18sp" />
     </LinearLayout>
 
 
     <TextView
         android:id="@+id/change_type_close"
-        android:background="?selectableItemBackground"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:textColor="@color/mjn_primary"
-        android:text="CLOSE"
-        android:padding="@dimen/activity_vertical_margin"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="?selectableItemBackground"
+        android:padding="@dimen/activity_vertical_margin"
+        android:text="CLOSE"
+        android:textColor="@color/mjn_primary" />
 </RelativeLayout>

@@ -1,33 +1,36 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detail_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/detail_fragment"
     tools:context="th.ac.mju.maejonavigation.screen.main.detail.DetailFragment">
 
-        <android.support.v4.widget.NestedScrollView
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+            <include
+                android:id="@+id/card_detail_location"
+                layout="@layout/card_detail_location"
+                android:visibility="gone" />
 
-                <include layout="@layout/card_detail_location"
-                    android:id="@+id/card_detail_location"
-                    android:visibility="gone"/>
+            <include
+                android:id="@+id/card_detail_map"
+                layout="@layout/card_detail_map"
+                android:visibility="gone" />
 
-                <include layout="@layout/card_detail_map"
-                    android:id="@+id/card_detail_map"
-                    android:visibility="gone"/>
+            <include
+                android:id="@+id/card_default"
+                layout="@layout/card_detail_default"
+                android:visibility="visible" />
 
-                <include layout="@layout/card_detail_default"
-                    android:id="@+id/card_default"
-                    android:visibility="visible"/>
-
-            </LinearLayout>
-        </android.support.v4.widget.NestedScrollView>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -78,7 +77,6 @@ public class ZoomImageActivity extends AppCompatActivity {
         //board = getIntent().getParcelableExtra("b");
 
 
-
         String title = bundle.getString("title");
 
         //initialize and set the image description
@@ -89,8 +87,6 @@ public class ZoomImageActivity extends AppCompatActivity {
         imageView = (TouchImageView) findViewById(R.id.grid_item_image);
 
         imageView.setImageBitmap(board);
-
-
 
 
         //imageView.setImageResource(R.drawable.test1);
@@ -164,7 +160,7 @@ public class ZoomImageActivity extends AppCompatActivity {
      * This Animate image back to thumbnail size/location as relieved from bundle.
      *
      * @param endAction This action gets run after the animation completes (this is
-     *                  when we actually switch activities)
+     * when we actually switch activities)
      */
     public void exitAnimation(final Runnable endAction) {
 

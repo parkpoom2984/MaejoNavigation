@@ -10,7 +10,7 @@ public class StringPreference {
     private final SharedPreferences sharedPreferences;
     private final String key;
 
-    public StringPreference(SharedPreferences preferences,String key) {
+    public StringPreference(SharedPreferences preferences, String key) {
         sharedPreferences = preferences;
         this.key = key;
     }
@@ -20,11 +20,11 @@ public class StringPreference {
     }
 
     public final String get() {
-        return sharedPreferences.getString(key,"");
+        return sharedPreferences.getString(key, "");
     }
 
     public final void set(String value) {
-        sharedPreferences.edit().putString(key,value).apply();
+        sharedPreferences.edit().putString(key, value).apply();
     }
 
     public final void delete() {

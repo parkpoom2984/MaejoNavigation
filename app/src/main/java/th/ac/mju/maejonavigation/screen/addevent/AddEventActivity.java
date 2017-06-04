@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -22,6 +21,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -81,7 +82,10 @@ public class AddEventActivity extends MjnActivity
     private DateSelect stateDate;
     private double lat, lng;
     private Date dateStart;
-    private Date dateEnd;
+
+    private static final String CATEGORY_ID_FILED = "categoryId";
+    private static final String LOCATION_ID_FILED = "locationId";
+
     private enum DateSelect {
         START, END
     }
@@ -96,17 +100,17 @@ public class AddEventActivity extends MjnActivity
                 calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.mjn_while));
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Event");
+        getSupportActionBar().setTitle(R.string.event);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(
                 ContextCompat.getDrawable(this, R.drawable.ic_close_white));
         getRealm().executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                values = realm.where(Locations.class).notEqualTo("categoryId", 1)
-                        .notEqualTo("categoryId", 4)
-                        .notEqualTo("locationId", 1)
-                        .notEqualTo("locationId", 24)
+                values = realm.where(Locations.class).notEqualTo(CATEGORY_ID_FILED, 1)
+                        .notEqualTo(CATEGORY_ID_FILED, 4)
+                        .notEqualTo(LOCATION_ID_FILED, 1)
+                        .notEqualTo(LOCATION_ID_FILED, 24)
                         .findAll();
                 setUpSpinner();
             }
@@ -165,18 +169,18 @@ public class AddEventActivity extends MjnActivity
     @OnClick(R.id.button_add_event)
     public void onClickAddEvent() {
         if (eventTitle.getText().toString().isEmpty()) {
-            Toast.makeText(this, "please enter event name", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.add_event_enter_name, Toast.LENGTH_SHORT).show();
         } else if (dateStartEvent.getText().toString().isEmpty()) {
-            Toast.makeText(this, "please enter event start date", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.add_event_enter_start_date, Toast.LENGTH_SHORT).show();
         } else if (dateEndEvent.getText().toString().isEmpty()) {
-            Toast.makeText(this, "please enter event end date", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.add_event_enter_end_date, Toast.LENGTH_SHORT).show();
         } else if (detailEvent.getText().toString().isEmpty()) {
-            Toast.makeText(this, "please enter event detail", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.add_event_enter_event_detail, Toast.LENGTH_SHORT).show();
         } else if (!addEventSelectListCheckbox.isChecked() &&
                 !addEventSelectMapCheckbox.isChecked()) {
-            Toast.makeText(this, "please select event location", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.add_event_select_event_location, Toast.LENGTH_SHORT).show();
         } else if (addEventSelectMapCheckbox.isChecked() && lat == 0 && lng == 0) {
-            Toast.makeText(this, "please choose event location on map", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.add_event_choose_event_location_on_map, Toast.LENGTH_SHORT).show();
         } else {
             String title = eventTitle.getText().toString();
             String startDate = dateStartEvent.getText().toString();
@@ -227,7 +231,7 @@ public class AddEventActivity extends MjnActivity
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    Snackbar.make(toolbar, "can't request, try again.", Snackbar.LENGTH_LONG)
+                    Snackbar.make(toolbar, R.string.can_not_request, Snackbar.LENGTH_LONG)
                             .show();
                 }
             });
@@ -261,45 +265,21 @@ public class AddEventActivity extends MjnActivity
                     Calendar calendarSelect = Calendar.getInstance();
                     calendarSelect.set(year,month,dayOfMonth);
                     Date date = calendarSelect.getTime();
-                    String textDate = dateFormat.format(date);
-                    if (year >= calendar.get(Calendar.YEAR)) {
-                        if (month > calendar.get(Calendar.MONTH)) {
-                            if (stateDate == DateSelect.START) {
-                                dateStartEvent.setText(textDate);
-                                dateStart = date;
-                            } else {
-                                if(date.after(dateStart)){
-                                    dateEndEvent.setText(textDate);
-                                }else{
-                                    Toast.makeText(AddEventActivity.this, "please select end date after start",
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        } else if (month == calendar.get(Calendar.MONTH)) {
-                            if (dayOfMonth >= calendar.get(Calendar.DAY_OF_MONTH)) {
-                                if (stateDate == DateSelect.START) {
-                                    dateStartEvent.setText(textDate);
-                                    dateStart = date;
-                                } else {
-                                    if(date.after(dateStart)){
-                                        dateEndEvent.setText(textDate);
-                                        dateEnd = date;
-                                    }else{
-                                        Toast.makeText(AddEventActivity.this, "please select end date after start",
-                                                Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            } else {
-                                Toast.makeText(AddEventActivity.this, "please select new date",
+                    if(date.after(calendar.getTime())){
+                        String textDate = dateFormat.format(date);
+                        if (stateDate == DateSelect.START) {
+                            dateStartEvent.setText(textDate);
+                            dateStart = date;
+                        } else {
+                            if(date.after(dateStart)){
+                                dateEndEvent.setText(textDate);
+                            }else{
+                                Toast.makeText(AddEventActivity.this, R.string.add_event_select_end_date_after_start,
                                         Toast.LENGTH_LONG).show();
                             }
-                        } else {
-                            Toast.makeText(AddEventActivity.this, "please select new date",
-                                    Toast.LENGTH_LONG).show();
                         }
-
-                    } else {
-                        Toast.makeText(AddEventActivity.this, "please select new date",
+                    }else{
+                        Toast.makeText(AddEventActivity.this, R.string.add_event_select_new_date,
                                 Toast.LENGTH_LONG).show();
                     }
                 }
@@ -314,7 +294,7 @@ public class AddEventActivity extends MjnActivity
     @OnClick(R.id.add_event_date_end)
     public void onClickDateEnd() {
         if(dateStartEvent.getText().toString().isEmpty()){
-            Toast.makeText(AddEventActivity.this, "please select start date first",
+            Toast.makeText(AddEventActivity.this, R.string.add_event_enter_start_date_first,
                     Toast.LENGTH_LONG).show();
         }else{
             stateDate = DateSelect.END;
@@ -343,14 +323,15 @@ public class AddEventActivity extends MjnActivity
                 lng = data.getDoubleExtra(LNG, 0);
                 addEventClickHere.setVisibility(View.GONE);
                 LatLng latLng = new LatLng(lat, lng);
+                BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(R.drawable.marker_event);
                 map.addMarker(new MarkerOptions()
-                        .position(latLng));
+                        .position(latLng).icon(iconEvent));
                 CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(latLng)
                         .zoom(15)
                         .build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                Snackbar.make(eventTitle, "Add location already", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(eventTitle, R.string.add_event_add_location_already, Snackbar.LENGTH_LONG).show();
             }
         }
     }

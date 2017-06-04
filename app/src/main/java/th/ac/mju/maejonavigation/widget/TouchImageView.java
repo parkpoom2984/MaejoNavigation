@@ -95,9 +95,11 @@ public class TouchImageView extends ImageView {
 
                             float deltaY = curr.y - last.y;
 
-                            float fixTransX = getFixDragTrans(deltaX, viewWidth, origWidth * saveScale);
+                            float fixTransX = getFixDragTrans(deltaX, viewWidth,
+                                    origWidth * saveScale);
 
-                            float fixTransY = getFixDragTrans(deltaY, viewHeight, origHeight * saveScale);
+                            float fixTransY = getFixDragTrans(deltaY, viewHeight,
+                                    origHeight * saveScale);
 
                             matrix.postTranslate(fixTransX, fixTransY);
 
@@ -119,7 +121,9 @@ public class TouchImageView extends ImageView {
 
                         if (xDiff < CLICK && yDiff < CLICK)
 
+                        {
                             performClick();
+                        }
 
                         break;
 
@@ -184,11 +188,14 @@ public class TouchImageView extends ImageView {
 
             if (origWidth * saveScale <= viewWidth || origHeight * saveScale <= viewHeight)
 
+            {
                 matrix.postScale(mScaleFactor, mScaleFactor, viewWidth / 2, viewHeight / 2);
+            } else
 
-            else
-
-                matrix.postScale(mScaleFactor, mScaleFactor, detector.getFocusX(), detector.getFocusY());
+            {
+                matrix.postScale(mScaleFactor, mScaleFactor, detector.getFocusX(),
+                        detector.getFocusY());
+            }
 
             fixTrans();
 
@@ -212,10 +219,11 @@ public class TouchImageView extends ImageView {
 
         if (fixTransX != 0 || fixTransY != 0)
 
+        {
             matrix.postTranslate(fixTransX, fixTransY);
+        }
 
     }
-
 
 
     float getFixTrans(float trans, float viewSize, float contentSize) {
@@ -238,11 +246,15 @@ public class TouchImageView extends ImageView {
 
         if (trans < minTrans)
 
+        {
             return -trans + minTrans;
+        }
 
         if (trans > maxTrans)
 
+        {
             return -trans + maxTrans;
+        }
 
         return 0;
 
@@ -276,7 +288,9 @@ public class TouchImageView extends ImageView {
 
                 || viewWidth == 0 || viewHeight == 0)
 
+        {
             return;
+        }
 
         oldMeasuredHeight = viewHeight;
 
@@ -290,9 +304,13 @@ public class TouchImageView extends ImageView {
 
             Drawable drawable = getDrawable();
 
-            if (drawable == null || drawable.getIntrinsicWidth() == 0 || drawable.getIntrinsicHeight() == 0)
+            if (drawable == null ||
+                    drawable.getIntrinsicWidth() == 0 ||
+                    drawable.getIntrinsicHeight() == 0)
 
+            {
                 return;
+            }
 
             int bmWidth = drawable.getIntrinsicWidth();
 

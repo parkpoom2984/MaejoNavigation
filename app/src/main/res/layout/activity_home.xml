@@ -12,11 +12,11 @@
     tools:context=".screen.home.HomeActivity">
 
     <TextView
-        android:text="loading"
-        android:layout_centerInParent="true"
         android:id="@+id/home_progress_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="loading"
         android:visibility="gone" />
 
     <ImageView

@@ -3,30 +3,29 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/white" >
+    android:background="@android:color/white"
+    android:orientation="vertical">
 
     <ImageView
-        android:scaleType="centerCrop"
-        android:layout_weight="8"
         android:id="@+id/map_location_image"
-        android:src="@drawable/maejo_default"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
-
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="8"
+        android:scaleType="centerCrop"
+        android:src="@drawable/maejo_default" />
 
     <View
-        android:background="@color/mjn_default_gray"
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp"
+        android:background="@color/mjn_default_gray" />
 
     <TextView
-        android:textStyle="bold"
-        android:layout_weight="2"
-        android:gravity="center"
         android:id="@+id/map_location_detail"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:textStyle="bold" />
 
 </LinearLayout>

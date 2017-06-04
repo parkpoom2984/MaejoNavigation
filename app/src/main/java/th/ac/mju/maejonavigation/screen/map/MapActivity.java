@@ -2,7 +2,6 @@ package th.ac.mju.maejonavigation.screen.map;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -67,14 +66,13 @@ import th.ac.mju.maejonavigation.model.Category;
 import th.ac.mju.maejonavigation.model.Event;
 import th.ac.mju.maejonavigation.model.ListEvent;
 import th.ac.mju.maejonavigation.model.Locations;
-import th.ac.mju.maejonavigation.screen.main.MainActivity;
 import th.ac.mju.maejonavigation.unity.SettingValues;
 
 import static th.ac.mju.maejonavigation.intent.MapIntent.LOCATION_DIRECTION;
 
 public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
-        LocationListener,SelectCategoryDialog.View {
+        LocationListener, SelectCategoryDialog.View {
     private SupportMapFragment supportMapFragment;
     private GoogleApiClient googleApiClient;
     private LatLngBounds.Builder builder;
@@ -83,13 +81,16 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     private LatLng latLngCurrentLocation;
     private boolean isTypeAllLocation;
     private Locations locationDirection;
-    @InjectView(R.id.refresh_map) FloatingActionButton refreshMapFloatAction;
+    @InjectView(R.id.refresh_map)
+    FloatingActionButton refreshMapFloatAction;
     @InjectView(R.id.adView)
     AdView adView;
-    @InjectView(R.id.select_map) FloatingActionButton selectMapFloatAction;
+    @InjectView(R.id.select_map)
+    FloatingActionButton selectMapFloatAction;
     AlertDialog alert;
     SelectCategoryDialog selectCategoryDialog;
     private List<Event> listEvent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,9 +109,9 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
             }
         });
         initAd();
-        isTypeAllLocation = getIntent().getBooleanExtra(MapIntent.TYPE_ALL_LOCATION,false);
+        isTypeAllLocation = getIntent().getBooleanExtra(MapIntent.TYPE_ALL_LOCATION, false);
         locationDirection = Parcels.unwrap(this.getIntent().getParcelableExtra(LOCATION_DIRECTION));
-        selectCategoryDialog = new SelectCategoryDialog(this,this);
+        selectCategoryDialog = new SelectCategoryDialog(this, this);
         updateAllLocation();
         supportMapFragment = ((SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map));
@@ -160,14 +161,15 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
             LocationRequest locationRequest = new LocationRequest()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                     .setInterval(5000);
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient,
+                    locationRequest, this);
             Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             double lat = location.getLatitude();
             double lng = location.getLongitude();
-            latLngCurrentLocation = new LatLng(lat,lng);
-            if(isTypeAllLocation){
+            latLngCurrentLocation = new LatLng(lat, lng);
+            if (isTypeAllLocation) {
                 refreshMapFloatAction.setVisibility(View.GONE);
-            }else {
+            } else {
                 refreshMapFloatAction.setVisibility(View.VISIBLE);
                 makePolylineOptions(locationDirection);
                 setOnClickInfoMarker(null);
@@ -175,10 +177,12 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         } else {
             refreshMapFloatAction.setVisibility(View.GONE);
             selectMapFloatAction.setVisibility(View.GONE);
-            Snackbar.make(refreshMapFloatAction,"Internet wrong",Snackbar.LENGTH_INDEFINITE).setAction(
+            Snackbar.make(refreshMapFloatAction, "please check GPS and Internet",
+                    Snackbar.LENGTH_INDEFINITE).setAction(
                     "Try Agian", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            googleApiClient.disconnect();
                             googleApiClient.connect();
                         }
                     }).show();
@@ -208,31 +212,38 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     public void onLocationChanged(Location location) {
         double lat = location.getLatitude();
         double lng = location.getLongitude();
-        latLngCurrentLocation = new LatLng(lat,lng);
+        latLngCurrentLocation = new LatLng(lat, lng);
         if (markerCurrent != null) {
             markerCurrent.remove();
         }
-        int id = getResources().getIdentifier(SettingValues.SELF_MARKER, "drawable", getPackageName());
-        markerCurrent = map.addMarker(new MarkerOptions().title("ตำแหน่งปัจจุบัน").position(latLngCurrentLocation).icon(
-                BitmapDescriptorFactory.fromResource(id)));
+        int id = getResources().getIdentifier(SettingValues.SELF_MARKER, "drawable",
+                getPackageName());
+        markerCurrent = map.addMarker(new MarkerOptions().title("ตำแหน่งปัจจุบัน")
+                .position(latLngCurrentLocation)
+                .icon(
+                        BitmapDescriptorFactory.fromResource(id)));
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
-    private void makePolylineOptions(final Locations location){
+
+    private void makePolylineOptions(final Locations location) {
         if (markerCurrent != null) {
             markerCurrent.remove();
         }
-        int id = getResources().getIdentifier(SettingValues.SELF_MARKER, "drawable", getPackageName());
-        markerCurrent = map.addMarker(new MarkerOptions().title("ตำแหน่งปัจจุบัน").position(latLngCurrentLocation).icon(
-                BitmapDescriptorFactory.fromResource(id)));
+        int id = getResources().getIdentifier(SettingValues.SELF_MARKER, "drawable",
+                getPackageName());
+        markerCurrent = map.addMarker(new MarkerOptions().title("ตำแหน่งปัจจุบัน")
+                .position(latLngCurrentLocation)
+                .icon(
+                        BitmapDescriptorFactory.fromResource(id)));
         final ProgressDialog progressDialog = new ProgressDialog(MapActivity.this);
         progressDialog.setMessage("loading");
         progressDialog.show();
         String serverKey = getString(R.string.server_key);
-        final LatLng destination = new LatLng(location.getLatitude(),location.getLongitude());
+        final LatLng destination = new LatLng(location.getLatitude(), location.getLongitude());
         GoogleDirection.withServerKey(serverKey)
                 .from(latLngCurrentLocation)
                 .to(destination)
@@ -244,22 +255,36 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                         Route route = direction.getRouteList().get(0);
                         Leg leg = route.getLegList().get(0);
                         ArrayList<LatLng> pointList = leg.getDirectionPoint();
-                        PolylineOptions polylineOptions = DirectionConverter.createPolyline(MapActivity.this, pointList, 5,
+                        PolylineOptions polylineOptions = DirectionConverter.createPolyline(
+                                MapActivity.this, pointList, 5,
                                 Color.rgb(67, 160, 71));
-                        PolylineOptions start = new PolylineOptions().add(pointList.get(0)).add(latLngCurrentLocation).width(6).color(Color.rgb(67, 160, 71)).geodesic(true);
-                        PolylineOptions end = new PolylineOptions().add(pointList.get(pointList.size() - 1)).add(destination).width(6).color(Color.rgb(67, 160, 71)).geodesic(true);
+                        PolylineOptions start = new PolylineOptions().add(pointList.get(0))
+                                .add(latLngCurrentLocation)
+                                .width(6)
+                                .color(Color.rgb(67, 160, 71))
+                                .geodesic(true);
+                        PolylineOptions end = new PolylineOptions().add(
+                                pointList.get(pointList.size() - 1))
+                                .add(destination)
+                                .width(6)
+                                .color(Color.rgb(67, 160, 71))
+                                .geodesic(true);
                         map.addPolyline(polylineOptions);
                         map.addPolyline(start);
                         map.addPolyline(end);
 
                         int categoryID = location.getCategoryId();
 
-                        MarkerOptions marker = new MarkerOptions().position(destination).title(location.getLocationName() + "");
-                        if(location.getCategoryId() != 0){
-                            int id = getResources().getIdentifier(SettingValues.CATEGORY_MARKER+categoryID, "drawable", getPackageName());
+                        MarkerOptions marker = new MarkerOptions().position(destination).title(
+                                location.getLocationName() + "");
+                        if (location.getCategoryId() != 0) {
+                            int id = getResources().getIdentifier(
+                                    SettingValues.CATEGORY_MARKER + categoryID, "drawable",
+                                    getPackageName());
                             marker.icon(BitmapDescriptorFactory.fromResource(id));
-                        }else{
-                            BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(R.drawable.marker_event);
+                        } else {
+                            BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(
+                                    R.drawable.marker_event);
                             marker.icon(iconEvent);
                         }
                         map.addMarker(marker).showInfoWindow();
@@ -268,14 +293,18 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                         Info durationInfo = leg.getDuration();
                         String distance = distanceInfo.getText();
                         String duration = durationInfo.getText();
-                        Snackbar.make(refreshMapFloatAction, "ห่างจากสถานที่นี้เป็นระยะทาง " + distance + System.getProperty ("line.separator")+"ระยะเวลา " + duration, Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(refreshMapFloatAction, "ห่างจากสถานที่นี้เป็นระยะทาง " +
+                                distance +
+                                System.getProperty("line.separator") +
+                                "ระยะเวลา " +
+                                duration, Snackbar.LENGTH_LONG).show();
                         progressDialog.cancel();
                         LatLngBounds.Builder builder = new LatLngBounds.Builder();
                         builder.include(latLngCurrentLocation);
                         builder.include(destination);
                         LatLngBounds bounds = builder.build();
 
-                        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds,100);
+                        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
                         map.animateCamera(cu);
                     }
 
@@ -287,36 +316,35 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     }
 
     @OnClick(R.id.refresh_map)
-    public void onClickRefresh(){
+    public void onClickRefresh() {
         map.clear();
         makePolylineOptions(locationDirection);
     }
 
 
-
     @OnClick(R.id.map_menu)
-    public void onClickMenu(){
-        Intent intent = new Intent(MapActivity.this,MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+    public void onClickMenu() {
+        finish();
     }
 
 
-    public void setOnClickInfoMarker(final List<Locations> listLocation){
+    public void setOnClickInfoMarker(final List<Locations> listLocation) {
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 String markerName = marker.getTitle();
-                if(isTypeAllLocation) {
+                if (isTypeAllLocation) {
                     for (Locations locations : listLocation) {
                         if (markerName.equals(locations.getLocationName())) {
-                            startActivity(new MainIntent(getApplicationContext(),locations.getLocationId()));
+                            startActivity(new MainIntent(getApplicationContext(),
+                                    locations.getLocationId()));
                             break;
                         }
                     }
-                }else{
-                    if(!locationDirection.getIsEventLocation()){
-                        startActivity(new MainIntent(getApplicationContext(),locationDirection.getLocationId()));
+                } else {
+                    if (!locationDirection.getIsEventLocation()) {
+                        startActivity(new MainIntent(getApplicationContext(),
+                                locationDirection.getLocationId()));
                     }
                 }
 
@@ -325,7 +353,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     }
 
 
-    public void setOnClickMarker(final List<Locations> listLocation){
+    public void setOnClickMarker(final List<Locations> listLocation) {
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             public boolean onMarkerClick(Marker marker) {
                 marker.showInfoWindow();
@@ -348,8 +376,8 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                             break;
                         }
                     }
-                    for(Event event : listEvent){
-                        if(markerName.equals(event.getEventName())) {
+                    for (Event event : listEvent) {
+                        if (markerName.equals(event.getEventName())) {
                             locationDirection = new Locations();
                             locationDirection.setIsEventLocation(true);
                             locationDirection.setLocationName(event.getEventName());
@@ -374,8 +402,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     }
 
 
-
-    public void initAd(){
+    public void initAd() {
         AdRequest.Builder adBuilder = new AdRequest.Builder();
         adBuilder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
         AdRequest adRequest = adBuilder.build();
@@ -393,38 +420,46 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         map.clear();
         refreshMapFloatAction.setVisibility(View.GONE);
         List<Locations> listAllLocation = new ArrayList<>();
-        for(Integer position : listPositionCategory){
-            RealmResults<Locations> listLocation = getRealm().where(Locations.class).equalTo("categoryId",position).findAll();
-            if(listLocation.size() == 0){
-                final BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(R.drawable.marker_event);
+        for (Integer position : listPositionCategory) {
+            RealmResults<Locations> listLocation = getRealm().where(Locations.class).equalTo(
+                    "categoryId", position).findAll();
+            if (listLocation.size() == 0) {
+                final BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(
+                        R.drawable.marker_event);
                 getRealm().executeTransaction(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
-                        for(Event event : listEvent){
+                        for (Event event : listEvent) {
                             LatLng latLngLocation = new LatLng(event.getLat(), event.getLng());
                             builder.include(latLngLocation);
-                            map.addMarker(new MarkerOptions().position(latLngLocation).title(event.getEventName() + "").icon(iconEvent));
+                            map.addMarker(new MarkerOptions().position(latLngLocation)
+                                    .title(event.getEventName() + "")
+                                    .icon(iconEvent));
                         }
                     }
                 });
-            }else{
-                for(Locations location : listLocation){
+            } else {
+                for (Locations location : listLocation) {
                     listAllLocation.add(location);
                     double lat = location.getLatitude();
                     double lng = location.getLongitude();
                     LatLng latLngLocation = new LatLng(lat, lng);
                     builder.include(latLngLocation);
-                    int id = getResources().getIdentifier(SettingValues.CATEGORY_MARKER+location.getCategoryId(), "drawable", getPackageName());
-                    map.addMarker(new MarkerOptions().position(latLngLocation).title(location.getLocationName() + "").icon(BitmapDescriptorFactory.fromResource(id)));
+                    int id = getResources().getIdentifier(
+                            SettingValues.CATEGORY_MARKER + location.getCategoryId(), "drawable",
+                            getPackageName());
+                    map.addMarker(new MarkerOptions().position(latLngLocation)
+                            .title(location.getLocationName() + "")
+                            .icon(BitmapDescriptorFactory.fromResource(id)));
                 }
             }
         }
         setOnClickMarker(listAllLocation);
         setOnClickInfoMarker(listAllLocation);
-        if(!listPositionCategory.isEmpty()){
+        if (!listPositionCategory.isEmpty()) {
             isTypeAllLocation = true;
             LatLngBounds bounds = builder.build();
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 50);
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
             map.animateCamera(cu);
         }
     }
