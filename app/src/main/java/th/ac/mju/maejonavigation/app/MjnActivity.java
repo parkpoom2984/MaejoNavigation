@@ -1,13 +1,8 @@
 package th.ac.mju.maejonavigation.app;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Bus;
@@ -18,11 +13,6 @@ import io.realm.RealmConfiguration;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import th.ac.mju.maejonavigation.BuildConfig;
-import th.ac.mju.maejonavigation.R;
-import th.ac.mju.maejonavigation.model.Category;
-import th.ac.mju.maejonavigation.model.Floor;
-import th.ac.mju.maejonavigation.model.Locations;
-import th.ac.mju.maejonavigation.model.Room;
 import th.ac.mju.maejonavigation.request.MjnApi;
 
 /**
@@ -34,8 +24,6 @@ public class MjnActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //RealmConfiguration config = new RealmConfiguration.Builder().build();
-        //Realm.setDefaultConfiguration(config);
         initRealm();
         initFabric();
     }
@@ -53,7 +41,10 @@ public class MjnActivity extends AppCompatActivity{
     }
 
     public static Realm getRealm(){
-        return Realm.getDefaultInstance();
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        return Realm.getInstance(config);
     }
 
     public static MjnApi getService(){

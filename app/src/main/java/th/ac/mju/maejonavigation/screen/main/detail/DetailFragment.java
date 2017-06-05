@@ -6,17 +6,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -29,25 +24,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-//import com.squareup.otto.Subscribe;
 import com.squareup.otto.Subscribe;
-import com.viewpagerindicator.LinePageIndicator;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
 import io.realm.Realm;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.dialog.ChooseFloorDialog;
 import th.ac.mju.maejonavigation.event.SelectLocationEvent;
 import th.ac.mju.maejonavigation.fragment.MjnFragment;
 import th.ac.mju.maejonavigation.intent.MapIntent;
-import th.ac.mju.maejonavigation.intent.PlanIntent;
 import th.ac.mju.maejonavigation.model.Locations;
 import th.ac.mju.maejonavigation.screen.main.MainActivity;
-import th.ac.mju.maejonavigation.screen.main.location.LocationFragment;
 import th.ac.mju.maejonavigation.unity.SettingValues;
 
 
@@ -61,7 +50,8 @@ public class DetailFragment extends MjnFragment {
     TextView locationDetail;
     @InjectView(R.id.view_pager_layout)
     RelativeLayout viewPagerLayout;
-    @InjectView(R.id.location_image_detail) ImageView imageLocation;
+    @InjectView(R.id.location_image_detail)
+    ImageView imageLocation;
     @InjectView(R.id.card_default)
     CardView defaultCard;
     @InjectView(R.id.card_detail_location)
@@ -70,16 +60,24 @@ public class DetailFragment extends MjnFragment {
     CardView mapCard;
     @InjectView(R.id.detail_image_default)
     ImageView imageDefault;
-    @InjectView(R.id.detail_name_default)TextView nameDefault;
+    @InjectView(R.id.detail_name_default)
+    TextView nameDefault;
     Locations location;
-    @InjectView(R.id.plan_line) View line;
+    @InjectView(R.id.plan_line)
+    View line;
     @InjectView(R.id.plan_box_view)
     FrameLayout boxViewPlan;
-    @InjectView(R.id.detail_icon_favorite) ImageView iconFavorite;
-    private enum State{
-        DEFAULT_PAGE,DETAIL_PAGE;
+    @InjectView(R.id.detail_icon_favorite)
+    ImageView iconFavorite;
+
+    private enum State {
+        DEFAULT_PAGE, DETAIL_PAGE;
     }
-    public static DetailFragment newInstance(){
+
+    private static final String LOCATION_ID_BUNDLE = "location_id";
+    private static final String LOCATION_ID_FIELD = "locationId";
+
+    public static DetailFragment newInstance() {
         return new DetailFragment();
     }
 
@@ -92,11 +90,13 @@ public class DetailFragment extends MjnFragment {
         setState(State.DEFAULT_PAGE);
         updateDefaultPage();
         if (getArguments() != null) {
-            final int locationId =  getArguments().getInt("location_id");
+            final int locationId = getArguments().getInt(LOCATION_ID_BUNDLE);
             getRealm().executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
-                    location = realm.where(Locations.class).equalTo("locationId",locationId).findFirst();
+                    location = realm.where(Locations.class)
+                            .equalTo(LOCATION_ID_FIELD, locationId)
+                            .findFirst();
                     updateLocationDetail(location);
                 }
             });
@@ -115,7 +115,7 @@ public class DetailFragment extends MjnFragment {
         updateLocationDetail(location);
     }
 
-    public void updateLocationDetail(Locations location){
+    public void updateLocationDetail(Locations location) {
         setState(State.DETAIL_PAGE);
         locationName.setText(location.getLocationName());
         locationDetail.setText(location.getLocationDetails());
@@ -138,14 +138,14 @@ public class DetailFragment extends MjnFragment {
 
     @OnClick(R.id.detail_get_direction)
     public void onClickGetDirection() {
-        Intent intent = new MapIntent(getContext(),false,location);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent intent = new MapIntent(getContext(), false, location);
         startActivity(intent);
     }
 
     @OnClick(R.id.plan_box_view)
-    public void onClickViewPlan(){
-        ChooseFloorDialog dialog = new ChooseFloorDialog(getContext(),location.getLocationName(),location.getListFloor());
+    public void onClickViewPlan() {
+        ChooseFloorDialog dialog = new ChooseFloorDialog(getContext(), location.getLocationName(),
+                location.getListFloor());
         dialog.show();
     }
 
@@ -166,8 +166,8 @@ public class DetailFragment extends MjnFragment {
     }
 
 
-    public void setState(State state){
-        switch (state){
+    public void setState(State state) {
+        switch (state) {
             case DEFAULT_PAGE:
                 defaultCard.setVisibility(View.VISIBLE);
                 locationCard.setVisibility(View.GONE);
@@ -181,33 +181,35 @@ public class DetailFragment extends MjnFragment {
         }
     }
 
-    public void checkNetworkAvailable(){
+    public void checkNetworkAvailable() {
         ConnectivityManager connectivityManager
-                = (ConnectivityManager)  getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         boolean isConnect = activeNetworkInfo != null && activeNetworkInfo.isConnected();
-        Snackbar snackbar = Snackbar.make(locationCard,"Internet can't connect",Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("Try again", new View.OnClickListener() {
+        Snackbar snackbar = Snackbar.make(locationCard, R.string.internet_can_not_connect,
+                Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.try_again, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkNetworkAvailable();
                 updateLocationDetail(location);
             }
         });
-        if(!isConnect){
+        if (!isConnect) {
             snackbar.show();
-        }else{
+        } else {
             snackbar.dismiss();
         }
     }
 
     @OnClick(R.id.detail_icon_favorite)
-    public void onClickIconFavorite(){
+    public void onClickIconFavorite() {
         getRealm().executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Locations locationEdit = realm.where(Locations.class).equalTo("locationId",location.getLocationId()).findFirst();
-                locationEdit.setFavoriteStatus(locationEdit.getFavoriteStatus()*-1);
+                Locations locationEdit = realm.where(Locations.class).equalTo(LOCATION_ID_FIELD,
+                        location.getLocationId()).findFirst();
+                locationEdit.setFavoriteStatus(locationEdit.getFavoriteStatus() * -1);
                 realm.copyToRealmOrUpdate(locationEdit);
                 showIconFavorite(locationEdit.getFavoriteStatus());
             }
@@ -217,10 +219,10 @@ public class DetailFragment extends MjnFragment {
     }
 
 
-    public void showIconFavorite(int favoriteStatus){
-        if(favoriteStatus==1){
+    public void showIconFavorite(int favoriteStatus) {
+        if (favoriteStatus == 1) {
             iconFavorite.setImageResource(R.drawable.fav_full);
-        }else{
+        } else {
             iconFavorite.setImageResource(R.drawable.fav_blank);
         }
     }

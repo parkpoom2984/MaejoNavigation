@@ -26,7 +26,8 @@ import static th.ac.mju.maejonavigation.screen.main.MainActivity.State.DETAIL_PA
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteFragment extends MjnFragment implements FavoritePresenter.View,LocationAdapter.LocationClick{
+public class FavoriteFragment extends MjnFragment
+        implements FavoritePresenter.View, LocationAdapter.LocationClick {
 
 
     @InjectView(R.id.favorite_recycler_view)
@@ -41,9 +42,9 @@ public class FavoriteFragment extends MjnFragment implements FavoritePresenter.V
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
-        ButterKnife.inject(this,view);
+        ButterKnife.inject(this, view);
         FavoritePresenter favoritePresenter = new FavoritePresenter();
-        favoritePresenter.create(this,getRealm());
+        favoritePresenter.create(this, getRealm());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(inflater.getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setHasFixedSize(true);
@@ -54,7 +55,8 @@ public class FavoriteFragment extends MjnFragment implements FavoritePresenter.V
 
     @Override
     public void showListLocationFavorite(List<Locations> listLocation) {
-        LocationAdapter locationAdapter = new LocationAdapter(listLocation,this,LocationFragment.State.SELECT);
+        LocationAdapter locationAdapter = new LocationAdapter(listLocation, this,
+                LocationFragment.State.SELECT);
         recyclerView.setAdapter(locationAdapter);
     }
 

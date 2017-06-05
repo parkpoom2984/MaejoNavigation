@@ -2,12 +2,7 @@ package th.ac.mju.maejonavigation.intent;
 
 import android.content.Context;
 import android.content.Intent;
-
-import org.parceler.Parcels;
-
-import th.ac.mju.maejonavigation.model.Floor;
 import th.ac.mju.maejonavigation.screen.main.MainActivity;
-import th.ac.mju.maejonavigation.screen.plan.PlanActivity;
 
 /**
  * Created by Teh on 5/16/2017.

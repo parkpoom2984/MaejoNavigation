@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,8 +17,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 import io.fabric.sdk.android.Fabric;
 import th.ac.mju.maejonavigation.R;
@@ -96,7 +93,6 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
     @Override
     protected void onResume(){
         super.onResume();
-        //handler.postDelayed(runnable,time);
     }
 
     @Override
@@ -109,7 +105,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
         switch (state) {
             case LOADING:
                 ProgressDialog progressDialog = new ProgressDialog(this);
-                progressDialog.setMessage("loading");
+                progressDialog.setMessage(getString(R.string.loading));
                 progressDialog.show();
                 logoImageView.setVisibility(View.GONE);
                 aboutUsTextView.setVisibility(View.GONE);
@@ -124,8 +120,8 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
                 = (ConnectivityManager)  getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         boolean isConnect = activeNetworkInfo != null && activeNetworkInfo.isConnected();
-        Snackbar snackbar = Snackbar.make(logoImageView,"Internet can't connect",Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("Try again", new View.OnClickListener() {
+        Snackbar snackbar = Snackbar.make(logoImageView,R.string.internet_can_not_connect,Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.try_again, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkNetworkAvailable();

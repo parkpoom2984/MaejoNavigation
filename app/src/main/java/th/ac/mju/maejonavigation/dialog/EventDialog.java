@@ -4,25 +4,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.goodiebag.horizontalpicker.HorizontalPicker;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.realm.Realm;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.intent.MapIntent;
-import th.ac.mju.maejonavigation.intent.PlanIntent;
 import th.ac.mju.maejonavigation.model.Event;
-import th.ac.mju.maejonavigation.model.Floor;
 import th.ac.mju.maejonavigation.model.Locations;
-
-import static java.security.AccessController.getContext;
 
 /**
  * Created by Teh on 5/12/2017.
@@ -35,8 +23,9 @@ public class EventDialog {
     private TextView dateEvent;
     private TextView detailEvent;
     private TextView locationEvent;
+    private static final String LOCATION_ID_FILED = "locationId";
 
-    public EventDialog(final Context context, final Event event,Realm realm) {
+    public EventDialog(final Context context, final Event event, Realm realm) {
         this.event = event;
         dialog = new Dialog(context);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -55,19 +44,20 @@ public class EventDialog {
             @Override
             public void execute(Realm realm) {
                 Locations location = new Locations();
-                if(event.getLocationId() == 1){
+                if (event.getLocationId() == 0) {
                     location.setIsEventLocation(true);
                     location.setLocationName(event.getEventName());
                     location.setLongitude(event.getLng());
                     location.setLatitude(event.getLat());
                     updateUI("กำหนดพิกัดผ่านแผนที่");
-                }else{
-                    Locations locationEvent = realm.where(Locations.class).equalTo("locationId",event.getLocationId()).findFirst();
+                } else {
+                    Locations locationEvent = realm.where(Locations.class).equalTo(
+                            LOCATION_ID_FILED, event.getLocationId()).findFirst();
                     location.setIsEventLocation(true);
                     location.setLocationName(event.getEventName());
                     location.setLongitude(locationEvent.getLongitude());
                     location.setLatitude(locationEvent.getLatitude());
-                    updateUI(location.getLocationName());
+                    updateUI(locationEvent.getLocationName());
                 }
                 goToMapIcon.setTag(location);
             }
@@ -79,16 +69,17 @@ public class EventDialog {
         dialog.show();
     }
 
-    public void onClickMap(TextView goToMapTextView){
+    public void onClickMap(TextView goToMapTextView) {
         goToMapTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.getContext().startActivity(new MapIntent(dialog.getContext(),false,(Locations) view.getTag()));
+                dialog.getContext().startActivity(
+                        new MapIntent(dialog.getContext(), false, (Locations) view.getTag()));
             }
         });
     }
 
-    public void onClickClose(TextView closeTextView){
+    public void onClickClose(TextView closeTextView) {
         closeTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,11 +88,15 @@ public class EventDialog {
         });
     }
 
-    public void updateUI(String locationName){
+    public void updateUI(String locationName) {
         Context context = dialog.getContext();
         titleEvent.setText(event.getEventName());
-        locationEvent.setText(context.getResources().getString(R.string.event_location,locationName));
-        dateEvent.setText(context.getResources().getString(R.string.event_date,event.getEventStartDate(),event.getEventEndDate()));
-        detailEvent.setText(context.getResources().getString(R.string.event_detail,event.getEventDetail()));
+        locationEvent.setText(
+                context.getResources().getString(R.string.event_location, locationName));
+        dateEvent.setText(context.getResources()
+                .getString(R.string.event_date, event.getEventStartDate(),
+                        event.getEventEndDate()));
+        detailEvent.setText(
+                context.getResources().getString(R.string.event_detail, event.getEventDetail()));
     }
 }

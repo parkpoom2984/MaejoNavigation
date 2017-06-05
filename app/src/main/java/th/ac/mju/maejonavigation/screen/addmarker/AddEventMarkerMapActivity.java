@@ -12,6 +12,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -41,7 +43,7 @@ public class AddEventMarkerMapActivity extends MjnActivity implements OnMapReady
         ButterKnife.inject(this);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.mjn_while));
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add Location");
+        getSupportActionBar().setTitle(R.string.add_location);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(ContextCompat.getDrawable(this, R.drawable.ic_close_white));
         supportMapFragment = ((SupportMapFragment) getSupportFragmentManager()
@@ -56,7 +58,7 @@ public class AddEventMarkerMapActivity extends MjnActivity implements OnMapReady
             setResult(Activity.RESULT_OK, new AddEventIntent(this,newLatLng.latitude,newLatLng.longitude));
             finish();
         }else{
-            Toast.makeText(this,"please choose location on the map first",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.add_location_marker_choose_location_first,Toast.LENGTH_LONG).show();
         }
 
     }
@@ -78,8 +80,9 @@ public class AddEventMarkerMapActivity extends MjnActivity implements OnMapReady
                     map.clear();
                 }
                 newLatLng = new LatLng(point.latitude, point.longitude);
+                BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(R.drawable.marker_event);
                 MarkerOptions markerOptions = new MarkerOptions()
-                        .position(newLatLng);
+                        .position(newLatLng).icon(iconEvent);
                 markerEvent = map.addMarker(markerOptions);
             }
         });

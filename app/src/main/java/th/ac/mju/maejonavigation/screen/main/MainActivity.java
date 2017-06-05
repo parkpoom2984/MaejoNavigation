@@ -14,11 +14,8 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -29,13 +26,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 import butterknife.OnClick;
-import de.greenrobot.event.EventBus;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
 
 import th.ac.mju.maejonavigation.dialog.AboutUsDialogFragment;
 import th.ac.mju.maejonavigation.dialog.Dialogs;
-import th.ac.mju.maejonavigation.event.SelectLocationEvent;
 import th.ac.mju.maejonavigation.intent.MapIntent;
 import th.ac.mju.maejonavigation.model.Locations;
 import th.ac.mju.maejonavigation.screen.addevent.AddEventActivity;
@@ -46,14 +41,13 @@ import th.ac.mju.maejonavigation.screen.main.event.EventFragment;
 import th.ac.mju.maejonavigation.screen.main.favorite.FavoriteFragment;
 import th.ac.mju.maejonavigation.screen.main.location.LocationFragment;
 
-import static java.security.AccessController.getContext;
 import static th.ac.mju.maejonavigation.intent.MainIntent.LOCATION_ID;
-import static th.ac.mju.maejonavigation.intent.PlanIntent.LOCATION_NAME;
 import static th.ac.mju.maejonavigation.screen.main.MainActivity.State.*;
 
 public class MainActivity extends MjnActivity implements MainPresenter.SearchListener {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private static final String LOCATION_ID_BUNDLE = "location_id";
     private MainPresenter mainPresenter;
     private int[] tabsIcon = {
             R.drawable.category_logo_2,
@@ -69,12 +63,14 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
     ViewPager mViewPager;
     @InjectView(R.id.dashboard_tab)
     TabLayout tabLayout;
-    @InjectView(R.id.adView) AdView adView;
+    @InjectView(R.id.adView)
+    AdView adView;
     private LocationFragment locationFragment;
     private int locationId;
     public int REQUEST_CODE = 12;
+
     public enum State {
-        CATEGORY_PAGE(0), LOCATION_PAGE(1), DETAIL_PAGE(2), FAVORITE_PAGE(3) , EVENT_PAGE(4);
+        CATEGORY_PAGE(0), LOCATION_PAGE(1), DETAIL_PAGE(2), FAVORITE_PAGE(3), EVENT_PAGE(4);
         private int position;
 
         State(int position) {
@@ -97,8 +93,8 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         updateUI();
         initAd();
-        locationId = getIntent().getIntExtra(LOCATION_ID,0);
-        if(locationId != 0){
+        locationId = getIntent().getIntExtra(LOCATION_ID, 0);
+        if (locationId != 0) {
             switchTabTo(DETAIL_PAGE.getPosition());
         }
     }
@@ -110,8 +106,7 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
                 switchTabTo(LOCATION_PAGE.getPosition());
                 break;
             case R.id.menu_map:
-                Intent intent = new MapIntent(this,true);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new MapIntent(this, true);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fab_fade_in, R.anim.fab_fade_out);
                 break;
@@ -134,16 +129,16 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
                 locationFragment = LocationFragment.newInstance();
                 return locationFragment;
             } else if (position == DETAIL_PAGE.getPosition()) {
-                Bundle bundl = new Bundle();
+                Bundle bundle = new Bundle();
                 DetailFragment detailFragment = DetailFragment.newInstance();
-                if(locationId!=0){
-                    bundl.putInt("location_id",locationId);
-                    detailFragment.setArguments(bundl);
+                if (locationId != 0) {
+                    bundle.putInt(LOCATION_ID_BUNDLE, locationId);
+                    detailFragment.setArguments(bundle);
                 }
                 return detailFragment;
-            } else if(position == FAVORITE_PAGE.getPosition()){
+            } else if (position == FAVORITE_PAGE.getPosition()) {
                 return FavoriteFragment.newInstance();
-            } else if( position == EVENT_PAGE.getPosition()){
+            } else if (position == EVENT_PAGE.getPosition()) {
                 return new EventFragment();
             } else {
                 return null;
@@ -179,9 +174,9 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if(newText.isEmpty()){
+                if (newText.isEmpty()) {
                     locationFragment.searchDefault();
-                }else{
+                } else {
                     mainPresenter.querySearch(getRealm(), newText);
                     switchTabTo(LOCATION_PAGE.getPosition());
                 }
@@ -205,26 +200,27 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
         switchTabTo(DETAIL_PAGE.getPosition());
     }
 
-    public void initAd(){
+    public void initAd() {
         AdRequest.Builder adBuilder = new AdRequest.Builder();
         AdRequest adRequest = adBuilder.build();
         adView.loadAd(adRequest);
     }
 
     @OnClick(R.id.main_logo)
-    public void onClickLogo(){
+    public void onClickLogo() {
         Dialogs.show(MainActivity.this, new AboutUsDialogFragment());
     }
 
 
-    public void goTo(){
-        startActivityForResult(new Intent(MainActivity.this, AddEventActivity.class),REQUEST_CODE);
+    public void goTo() {
+        startActivityForResult(new Intent(MainActivity.this, AddEventActivity.class), REQUEST_CODE);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE) {
-            if(resultCode == Activity.RESULT_OK){
-                Snackbar.make(mViewPager,"Add event already, We will process your request, and get back to you shortly.",Snackbar.LENGTH_LONG).show();
+            if (resultCode == Activity.RESULT_OK) {
+                Snackbar.make(mViewPager, R.string.msg_add_event, Snackbar.LENGTH_LONG).show();
             }
         }
     }

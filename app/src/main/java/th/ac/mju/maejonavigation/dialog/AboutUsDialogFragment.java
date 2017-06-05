@@ -5,14 +5,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
+
+import th.ac.mju.maejonavigation.R;
 
 /**
  * Created by Teh on 5/21/2017.
  */
 
 public class AboutUsDialogFragment extends SimpleTextDialogFragment {
+    private static final String DIVISION = "Information Technology Division,";
+    private static final String FACULTY = "Faculty of Science,";
+    private static final String UNIVERSITY = "Maejo University";
+
     @Override
     protected void onConfigBuilder(AlertDialog.Builder builder, LayoutInflater inflater) {
         super.onConfigBuilder(builder, inflater);
@@ -21,16 +26,16 @@ public class AboutUsDialogFragment extends SimpleTextDialogFragment {
 
     @Override
     protected CharSequence getTitle() {
-        return "About us";
+        return getString(R.string.about_us);
     }
 
     @Override
     protected CharSequence getMessage() {
-        return "Information Technology Division," +
+        return DIVISION +
                 System.getProperty("line.separator") +
-                "Faculty of Science," +
+                FACULTY +
                 System.getProperty("line.separator") +
-                "Maejo University";
+                UNIVERSITY;
     }
 
     @Override
@@ -40,12 +45,12 @@ public class AboutUsDialogFragment extends SimpleTextDialogFragment {
 
     @Override
     protected CharSequence getPositiveText() {
-        return "CONTACT";
+        return getString(R.string.contact);
     }
 
     @Override
     protected CharSequence getNegativeText() {
-        return "CLOSE";
+        return getString(R.string.close);
     }
 
     @Override

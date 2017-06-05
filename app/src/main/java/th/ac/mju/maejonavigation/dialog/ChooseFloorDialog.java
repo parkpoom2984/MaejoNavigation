@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.goodiebag.horizontalpicker.HorizontalPicker;
@@ -23,7 +22,8 @@ import th.ac.mju.maejonavigation.model.Floor;
 public class ChooseFloorDialog {
     private Dialog dialog;
 
-    public ChooseFloorDialog(final Context context,final String locationName,final List<Floor> listFloor) {
+    public ChooseFloorDialog(final Context context, final String locationName,
+            final List<Floor> listFloor) {
         dialog = new Dialog(context);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -34,16 +34,18 @@ public class ChooseFloorDialog {
         locationNameTextView.setText(locationName);
         HorizontalPicker hpText = (HorizontalPicker) dialog.findViewById(R.id.picker);
         List<HorizontalPicker.PickerItem> textItems = new ArrayList<>();
-        for(Floor floor : listFloor){
+        for (Floor floor : listFloor) {
             textItems.add(new HorizontalPicker.TextItem(floor.getFloorName()));
         }
         hpText.setItems(textItems);
-        HorizontalPicker.OnSelectionChangeListener listener = new HorizontalPicker.OnSelectionChangeListener() {
-            @Override
-            public void onItemSelect(HorizontalPicker picker, int index) {
-                context.startActivity(new PlanIntent(context,locationName,listFloor.get(index)));
-            }
-        };
+        HorizontalPicker.OnSelectionChangeListener listener =
+                new HorizontalPicker.OnSelectionChangeListener() {
+                    @Override
+                    public void onItemSelect(HorizontalPicker picker, int index) {
+                        context.startActivity(
+                                new PlanIntent(context, locationName, listFloor.get(index)));
+                    }
+                };
         hpText.setChangeListener(listener);
         closeIcon.setOnClickListener(new View.OnClickListener() {
             @Override

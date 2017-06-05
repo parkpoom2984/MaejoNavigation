@@ -1,16 +1,12 @@
 package th.ac.mju.maejonavigation.screen.main;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import th.ac.mju.maejonavigation.model.Floor;
 import th.ac.mju.maejonavigation.model.Locations;
-import th.ac.mju.maejonavigation.model.Room;
 
 /**
  * Created by Teh on 3/31/2017.
@@ -35,11 +31,13 @@ public class MainPresenter {
         });
     }
 
-    public void queryLocationFromMap(Realm realm,final int locationId) {
+    public void queryLocationFromMap(Realm realm, final int locationId) {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Locations location = realm.where(Locations.class).equalTo("locationId",locationId).findFirst();
+                Locations location = realm.where(Locations.class)
+                        .equalTo("locationId", locationId)
+                        .findFirst();
                 listener.switchToLocationDetail(location);
             }
         });
@@ -79,11 +77,11 @@ public class MainPresenter {
                             .getRoomName()
                             .contains(txt)) {
 
-                            floor.getListRoom().add(listLocation.get(i)
-                                    .getListFloor()
-                                    .get(j)
-                                    .getListRoom()
-                                    .get(a));
+                        floor.getListRoom().add(listLocation.get(i)
+                                .getListFloor()
+                                .get(j)
+                                .getListRoom()
+                                .get(a));
                     }
                 }
                 if (floor.getListRoom().size() != 0) {
@@ -92,8 +90,9 @@ public class MainPresenter {
             }
 
             if (listFloor.size() != 0) {
-                for(Floor floor : listFloor)
-                location.addListFloor(floor);
+                for (Floor floor : listFloor) {
+                    location.addListFloor(floor);
+                }
                 filter.add(location);
             }
         }
@@ -103,6 +102,7 @@ public class MainPresenter {
 
     interface SearchListener {
         void updateFromSearch(List<Locations> listLocation);
+
         void switchToLocationDetail(Locations location);
     }
 }

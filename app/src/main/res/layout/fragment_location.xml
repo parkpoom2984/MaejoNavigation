@@ -11,34 +11,39 @@
         android:layout_height="match_parent"
         android:layout_margin="5dp"
         android:scrollbars="vertical" />
+
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/location_not_found_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:visibility="gone">
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
             <ImageView
-                android:alpha="0.4"
-                android:src="@drawable/ic_search_not_found"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:alpha="0.4"
+                android:src="@drawable/ic_search_not_found" />
+
             <TextView
                 android:id="@+id/search"
-                android:textSize="64dp"
-                android:layout_centerInParent="true"
-                android:textColor="@color/mjn_primary_dark"
-                android:text="\?"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="\?"
+                android:textColor="@color/mjn_primary_dark"
+                android:textSize="64dp" />
         </RelativeLayout>
+
         <TextView
-            android:text="not found"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="not found" />
     </LinearLayout>
 
 </FrameLayout>

@@ -3,32 +3,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/tools"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/plan_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/mjn_primary"
+        android:titleTextColor="@color/mjn_while"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         >
 
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
             android:background="?android:selectableItemBackground">
-
-
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/plan_menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_margin="@dimen/fab_margin"
-                android:src="@drawable/main_icon"
-                app:backgroundTint="@color/mjn_primary"
-                tools:ignore="RtlHardcoded" />
 
 
             <include
@@ -36,20 +34,20 @@
                 layout="@layout/card_plan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/plan_menu"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:layout_marginLeft="@dimen/activity_vertical_margin"
-                android:layout_marginRight="@dimen/activity_vertical_margin" />
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:visibility="gone" />
 
             <TableLayout
                 android:id="@+id/plan_table_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/plan_card_view"
-                android:layout_marginBottom="50dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="15dp" />
+                android:layout_marginBottom="72dp"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin" />
 
 
         </RelativeLayout>

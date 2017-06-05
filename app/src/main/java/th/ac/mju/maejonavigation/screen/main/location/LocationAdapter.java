@@ -60,6 +60,7 @@ public class LocationAdapter extends  RecyclerView.Adapter<LocationAdapter.ViewH
                     text += room.getRoomName()+",";
                 }
             }
+            text = text.substring(0, text.length()-1);
         }
         boolean isSearch = state == LocationFragment.State.SEARCH;
         holder.roomName.setText(text);

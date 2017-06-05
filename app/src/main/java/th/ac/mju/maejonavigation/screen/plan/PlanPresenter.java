@@ -3,7 +3,6 @@ package th.ac.mju.maejonavigation.screen.plan;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 import th.ac.mju.maejonavigation.model.Floor;
 import th.ac.mju.maejonavigation.model.Room;
 
@@ -15,21 +14,22 @@ public class PlanPresenter {
 
     private View listener;
     private static final String FLOOR_ID = "floorId";
+
     public PlanPresenter(View listener) {
         this.listener = listener;
     }
 
-    public void getListRoom(Realm realm,final int floorId){
+    public void getListRoom(Realm realm, final int floorId) {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                Floor floor = realm.where(Floor.class).equalTo(FLOOR_ID,floorId).findFirst();
+                Floor floor = realm.where(Floor.class).equalTo(FLOOR_ID, floorId).findFirst();
                 listener.showListRoom(floor.getListRoom());
             }
         });
     }
 
-    interface View{
+    interface View {
         void showListRoom(List<Room> listRoom);
     }
 }

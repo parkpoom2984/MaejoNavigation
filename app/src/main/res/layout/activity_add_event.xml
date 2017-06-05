@@ -34,12 +34,17 @@
                 android:layout_height="wrap_content"
                 android:text="ชื่อกิจกรรม"
                 android:textStyle="bold" />
-
+            <android.support.v7.widget.CardView
+                android:layout_margin="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
             <EditText
+                android:layout_margin="8dp"
+                android:background="@color/mjn_while"
                 android:id="@+id/event_title_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
+            </android.support.v7.widget.CardView>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -111,13 +116,15 @@
                 android:text="สถานที่จัดกิจกรรม"
                 android:textStyle="bold" />
 
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
+                app:buttonTint="@color/mjn_primary"
                 android:id="@+id/event_list_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="เลือกสถานที่ในรายการ" />
 
-            <CheckBox
+            <android.support.v7.widget.AppCompatCheckBox
+                app:buttonTint="@color/mjn_primary"
                 android:id="@+id/event_map_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -130,7 +137,7 @@
                 android:layout_height="match_parent">
 
                 <Spinner
-                    android:layout_margin="@dimen/activity_vertical_margin"
+                    android:layout_margin="8dp"
                     android:id="@+id/event_location_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
