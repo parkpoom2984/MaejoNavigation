@@ -49,7 +49,7 @@ public class EventDialog {
                     location.setLocationName(event.getEventName());
                     location.setLongitude(event.getLng());
                     location.setLatitude(event.getLat());
-                    updateUI("กำหนดพิกัดผ่านแผนที่");
+                    updateUI(event.getEventName());
                 } else {
                     Locations locationEvent = realm.where(Locations.class).equalTo(
                             LOCATION_ID_FILED, event.getLocationId()).findFirst();

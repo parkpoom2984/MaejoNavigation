@@ -60,6 +60,6 @@ public class EventFragment extends MjnFragment
                 value.add(event);
             }
         }
-        eventRecyclerView.setAdapter(new EventAdapter(listEvent, getRealm(), this));
+        eventRecyclerView.setAdapter(new EventAdapter(value, getRealm(), this));
     }
 }
