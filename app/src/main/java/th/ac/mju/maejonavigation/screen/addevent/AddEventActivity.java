@@ -82,7 +82,7 @@ public class AddEventActivity extends MjnActivity
     private DateSelect stateDate;
     private double lat, lng;
     private Date dateStart;
-
+    private Date dateEnd;
     private static final String CATEGORY_ID_FILED = "categoryId";
     private static final String LOCATION_ID_FILED = "locationId";
 
@@ -178,13 +178,16 @@ public class AddEventActivity extends MjnActivity
             Toast.makeText(this, R.string.add_event_enter_event_detail, Toast.LENGTH_SHORT).show();
         } else if (!addEventSelectListCheckbox.isChecked() &&
                 !addEventSelectMapCheckbox.isChecked()) {
-            Toast.makeText(this, R.string.add_event_select_event_location, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.add_event_select_event_location, Toast.LENGTH_SHORT)
+                    .show();
         } else if (addEventSelectMapCheckbox.isChecked() && lat == 0 && lng == 0) {
-            Toast.makeText(this, R.string.add_event_choose_event_location_on_map, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.add_event_choose_event_location_on_map,
+                    Toast.LENGTH_SHORT).show();
         } else {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String title = eventTitle.getText().toString();
-            String startDate = dateStartEvent.getText().toString();
-            String endDate = dateEndEvent.getText().toString();
+            String startDate = dateFormat.format(dateStart);
+            String endDate = dateFormat.format(dateEnd);
             String detail = detailEvent.getText().toString();
             JSONObject jsonObject = new JSONObject();
             if (addEventSelectListCheckbox.isChecked()) {
@@ -263,22 +266,24 @@ public class AddEventActivity extends MjnActivity
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
                     Calendar calendarSelect = Calendar.getInstance();
-                    calendarSelect.set(year,month,dayOfMonth);
+                    calendarSelect.set(year, month, dayOfMonth);
                     Date date = calendarSelect.getTime();
-                    if(date.after(calendar.getTime())){
+                    if (date.after(calendar.getTime())) {
                         String textDate = dateFormat.format(date);
                         if (stateDate == DateSelect.START) {
                             dateStartEvent.setText(textDate);
                             dateStart = date;
                         } else {
-                            if(date.after(dateStart)){
+                            if (date.after(dateStart)) {
                                 dateEndEvent.setText(textDate);
-                            }else{
-                                Toast.makeText(AddEventActivity.this, R.string.add_event_select_end_date_after_start,
+                                dateEnd = date;
+                            } else {
+                                Toast.makeText(AddEventActivity.this,
+                                        R.string.add_event_select_end_date_after_start,
                                         Toast.LENGTH_LONG).show();
                             }
                         }
-                    }else{
+                    } else {
                         Toast.makeText(AddEventActivity.this, R.string.add_event_select_new_date,
                                 Toast.LENGTH_LONG).show();
                     }
@@ -293,10 +298,10 @@ public class AddEventActivity extends MjnActivity
 
     @OnClick(R.id.add_event_date_end)
     public void onClickDateEnd() {
-        if(dateStartEvent.getText().toString().isEmpty()){
+        if (dateStartEvent.getText().toString().isEmpty()) {
             Toast.makeText(AddEventActivity.this, R.string.add_event_enter_start_date_first,
                     Toast.LENGTH_LONG).show();
-        }else{
+        } else {
             stateDate = DateSelect.END;
             datePicker.show();
         }
@@ -323,7 +328,8 @@ public class AddEventActivity extends MjnActivity
                 lng = data.getDoubleExtra(LNG, 0);
                 addEventClickHere.setVisibility(View.GONE);
                 LatLng latLng = new LatLng(lat, lng);
-                BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(R.drawable.marker_event);
+                BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(
+                        R.drawable.marker_event);
                 map.addMarker(new MarkerOptions()
                         .position(latLng).icon(iconEvent));
                 CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -331,7 +337,8 @@ public class AddEventActivity extends MjnActivity
                         .zoom(15)
                         .build();
                 map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                Snackbar.make(eventTitle, R.string.add_event_add_location_already, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(eventTitle, R.string.add_event_add_location_already,
+                        Snackbar.LENGTH_LONG).show();
             }
         }
     }

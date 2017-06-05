@@ -52,8 +52,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                if (event.getLocationId() == 1) {
-                    holder.eventLocation.setText("กำหนดพิกัดผ่านแผนที่");
+                if (event.getLocationId() == 0) {
+                    holder.eventLocation.setText(event.getEventName());
                 } else {
                     Locations location = realm.where(Locations.class).equalTo(LOCATION_ID_FIELD,
                             event.getLocationId()).findFirst();

@@ -39,6 +39,7 @@
                 android:textSize="12sp" />
 
             <TextView
+                android:gravity="center_horizontal"
                 android:id="@+id/location_room_textview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
