@@ -17,6 +17,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,15 +40,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import io.realm.Realm;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
 import th.ac.mju.maejonavigation.model.Locations;
@@ -223,21 +228,21 @@ public class AddEventActivity extends MjnActivity
                     e.printStackTrace();
                 }
             }
-
-            Call<Void> callListCategory = getService().addEvent(jsonObject);
-            callListCategory.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    setResult(Activity.RESULT_OK, new Intent());
-                    finish();
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Snackbar.make(toolbar, R.string.can_not_request, Snackbar.LENGTH_LONG)
-                            .show();
-                }
-            });
+            sendAddEvent(jsonObject);
+            //Call<Void> callListCategory = getService().addEvent(jsonObject);
+            //callListCategory.enqueue(new Callback<Void>() {
+            //    @Override
+            //    public void onResponse(Call<Void> call, Response<Void> response) {
+            //        setResult(Activity.RESULT_OK, new Intent());
+            //        finish();
+            //    }
+            //
+            //    @Override
+            //    public void onFailure(Call<Void> call, Throwable t) {
+            //        Snackbar.make(toolbar, R.string.can_not_request, Snackbar.LENGTH_LONG)
+            //                .show();
+            //    }
+            //});
         }
     }
 
@@ -341,5 +346,38 @@ public class AddEventActivity extends MjnActivity
                         Snackbar.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void sendAddEvent(final JSONObject jsonObject) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = "http://itsci.mju.ac.th/MaejoNavigation/JSONEventServlet";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null,
+                new com.android.volley.Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            setResult(Activity.RESULT_OK, new Intent());
+                            finish();
+                        } catch (Exception e) {
+                            Snackbar.make(toolbar, R.string.can_not_request, Snackbar.LENGTH_LONG)
+                                    .show();
+                        }
+                    }
+                }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Snackbar.make(toolbar, R.string.can_not_request, Snackbar.LENGTH_LONG).show();
+            }
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("data", jsonObject.toString());
+                return headers;
+            }
+        };
+        requestQueue.add(jsonObjectRequest);
     }
 }
