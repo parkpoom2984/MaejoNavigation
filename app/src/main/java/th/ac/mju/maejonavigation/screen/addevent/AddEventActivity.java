@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -35,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -43,6 +45,7 @@ import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Headers;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
 import th.ac.mju.maejonavigation.model.Locations;
@@ -165,7 +168,7 @@ public class AddEventActivity extends MjnActivity
 
     }
 
-
+    @Headers({ "Content-Type: application/json;charset=UTF-8"})
     @OnClick(R.id.button_add_event)
     public void onClickAddEvent() {
         if (eventTitle.getText().toString().isEmpty()) {
@@ -184,12 +187,12 @@ public class AddEventActivity extends MjnActivity
             Toast.makeText(this, R.string.add_event_choose_event_location_on_map,
                     Toast.LENGTH_SHORT).show();
         } else {
+            JSONObject jsonObject = new JSONObject();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String title = eventTitle.getText().toString();
             String startDate = dateFormat.format(dateStart);
             String endDate = dateFormat.format(dateEnd);
             String detail = detailEvent.getText().toString();
-            JSONObject jsonObject = new JSONObject();
             if (addEventSelectListCheckbox.isChecked()) {
                 for (Locations locations : values) {
                     if (locationSelect.getSelectedItem().toString().equals(
@@ -234,12 +237,14 @@ public class AddEventActivity extends MjnActivity
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-                    Snackbar.make(toolbar, R.string.can_not_request, Snackbar.LENGTH_LONG)
-                            .show();
+                   Snackbar.make(toolbar, R.string.can_not_request, Snackbar.LENGTH_LONG)
+                           .show();
+
                 }
             });
         }
     }
+
 
 
     public void setUpSpinner() {
