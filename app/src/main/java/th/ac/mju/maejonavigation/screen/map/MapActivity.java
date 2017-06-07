@@ -400,8 +400,6 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                                 locationDirection.setLongitude(event.getLng());
                                 locationDirection.setLatitude(event.getLat());
                             }
-                            locationDirection.setLongitude(event.getLng());
-                            locationDirection.setLatitude(event.getLat());
                             refreshMapFloatAction.setVisibility(View.VISIBLE);
                             refreshMapFloatAction.setOnClickListener(new View.OnClickListener() {
                                 @Override
