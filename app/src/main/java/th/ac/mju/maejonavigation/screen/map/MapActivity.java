@@ -90,7 +90,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     AlertDialog alert;
     SelectCategoryDialog selectCategoryDialog;
     private List<Event> listEvent;
-
+    private static final String LOCATION_ID_FILED = "locationId";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +100,13 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         callListEvent.enqueue(new Callback<ListEvent>() {
             @Override
             public void onResponse(Call<ListEvent> call, Response<ListEvent> response) {
-                listEvent = response.body().getListEvent();
+                List<Event> value = response.body().getListEvent();
+                listEvent = new ArrayList<>();
+                for (Event event : value) {
+                    if (event.getStatus() == 1) {
+                        listEvent.add(event);
+                    }
+                }
             }
 
             @Override
@@ -376,11 +382,24 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                             break;
                         }
                     }
-                    for (Event event : listEvent) {
+                    for (final Event event : listEvent) {
                         if (markerName.equals(event.getEventName())) {
                             locationDirection = new Locations();
                             locationDirection.setIsEventLocation(true);
                             locationDirection.setLocationName(event.getEventName());
+                            if(event.getLat() == 0 && event.getLng() == 0){
+                                getRealm().executeTransaction(new Realm.Transaction() {
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        Locations location = realm.where(Locations.class).equalTo(LOCATION_ID_FILED,event.getLocationId()).findFirst();
+                                        locationDirection.setLongitude(location.getLongitude());
+                                        locationDirection.setLatitude(location.getLatitude());
+                                    }
+                                });
+                            }else{
+                                locationDirection.setLongitude(event.getLng());
+                                locationDirection.setLatitude(event.getLat());
+                            }
                             locationDirection.setLongitude(event.getLng());
                             locationDirection.setLatitude(event.getLat());
                             refreshMapFloatAction.setVisibility(View.VISIBLE);
@@ -430,7 +449,13 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                     @Override
                     public void execute(Realm realm) {
                         for (Event event : listEvent) {
-                            LatLng latLngLocation = new LatLng(event.getLat(), event.getLng());
+                            LatLng latLngLocation = null;
+                            if(event.getLat() == 0 && event.getLng() == 0){
+                               Locations location = realm.where(Locations.class).equalTo(LOCATION_ID_FILED,event.getLocationId()).findFirst();
+                                latLngLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            }else{
+                                latLngLocation = new LatLng(event.getLat(), event.getLng());
+                            }
                             builder.include(latLngLocation);
                             map.addMarker(new MarkerOptions().position(latLngLocation)
                                     .title(event.getEventName() + "")

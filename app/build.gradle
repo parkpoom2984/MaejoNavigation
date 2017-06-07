@@ -25,8 +25,7 @@ android {
         targetSdkVersion 22
         def STRING = "String"
         def MJN_API_BASE_URL = "MJN_API_BASE_URL"
-
-       buildConfigField STRING, MJN_API_BASE_URL, "\"http://www.itsci.mju.ac.th/MaejoNavigation/\""
+        buildConfigField STRING, MJN_API_BASE_URL, "\"http://www.itsci.mju.ac.th/MaejoNavigation/\""
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -92,4 +91,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-ads:10.2.4'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'org.parceler:parceler:1.1.6'
+    compile 'com.android.volley:volley:1.0.0'
 }
