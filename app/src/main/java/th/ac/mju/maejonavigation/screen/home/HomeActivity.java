@@ -44,7 +44,10 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
 
     @Override
     public void requestFail() {
-
+        Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fab_fade_in,R.anim.fab_fade_out);
     }
 
     private enum State {

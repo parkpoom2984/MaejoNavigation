@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import com.squareup.otto.Bus;
 
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import th.ac.mju.maejonavigation.BuildConfig;
@@ -33,10 +32,7 @@ public abstract class MjnFragment extends Fragment {
 
 
     public static Realm getRealm() {
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        return Realm.getInstance(config);
+        return Realm.getDefaultInstance();
     }
 
     public static Bus getBus() {

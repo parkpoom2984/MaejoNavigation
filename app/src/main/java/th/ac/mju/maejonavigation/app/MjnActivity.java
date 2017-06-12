@@ -1,5 +1,6 @@
 package th.ac.mju.maejonavigation.app;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import io.realm.RealmConfiguration;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import th.ac.mju.maejonavigation.BuildConfig;
+import th.ac.mju.maejonavigation.prefer.StringPreference;
 import th.ac.mju.maejonavigation.request.MjnApi;
 
 /**
@@ -21,9 +23,16 @@ import th.ac.mju.maejonavigation.request.MjnApi;
 
 public class MjnActivity extends AppCompatActivity{
     private static Bus bus = new Bus();
+
+    private static final String MJN_SHARED_PREFERENCES = "mjn_shared_preference";
+    private static final String DATA_STATUS = "data_status";
+    private static StringPreference stringPreference = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sp = getSharedPreferences(MJN_SHARED_PREFERENCES, MODE_PRIVATE);
+        stringPreference = new StringPreference(sp, DATA_STATUS);
         initRealm();
         initFabric();
     }
@@ -41,10 +50,15 @@ public class MjnActivity extends AppCompatActivity{
     }
 
     public static Realm getRealm(){
-        RealmConfiguration config = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        return Realm.getInstance(config);
+        try{
+            return Realm.getDefaultInstance();
+        }catch (Exception e){
+            RealmConfiguration config = new RealmConfiguration.Builder()
+                    .deleteRealmIfMigrationNeeded()
+                    .build();
+            stringPreference.delete();
+            return Realm.getInstance(config);
+        }
     }
 
     public static MjnApi getService(){

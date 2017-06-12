@@ -57,7 +57,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 } else {
                     Locations location = realm.where(Locations.class).equalTo(LOCATION_ID_FIELD,
                             event.getLocationId()).findFirst();
-                    holder.eventLocation.setText(location.getLocationName());
+                    if (location.getLocationName() == null) {
+                        holder.eventLocation.setText(location.getLocationName());
+                    }
                 }
             }
         });

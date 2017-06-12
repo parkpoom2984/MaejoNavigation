@@ -119,7 +119,7 @@ public class HomePresenter {
 
             @Override
             public void onFailure(Call<ListCategory> call, Throwable t) {
-                view.requestFail();
+
             }
         });
         favoritePreference.delete();
