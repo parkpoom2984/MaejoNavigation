@@ -2,9 +2,14 @@ package th.ac.mju.maejonavigation.screen.map;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
@@ -12,6 +17,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 
 import com.akexorcist.googledirection.DirectionCallback;
@@ -81,6 +87,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     private LatLng latLngCurrentLocation;
     private boolean isTypeAllLocation;
     private Locations locationDirection;
+    private List<Locations> listAllLocation;
     @InjectView(R.id.refresh_map)
     FloatingActionButton refreshMapFloatAction;
     @InjectView(R.id.adView)
@@ -91,29 +98,34 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     SelectCategoryDialog selectCategoryDialog;
     private List<Event> listEvent;
     private static final String LOCATION_ID_FILED = "locationId";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.inject(this);
-        Call<ListEvent> callListEvent = getService().getListEvent();
-        callListEvent.enqueue(new Callback<ListEvent>() {
-            @Override
-            public void onResponse(Call<ListEvent> call, Response<ListEvent> response) {
-                List<Event> value = response.body().getListEvent();
-                listEvent = new ArrayList<>();
-                for (Event event : value) {
-                    if (event.getStatus() == 1) {
-                        listEvent.add(event);
+        if (isNetworkAvailable()) {
+            Call<ListEvent> callListEvent = getService().getListEvent();
+            callListEvent.enqueue(new Callback<ListEvent>() {
+                @Override
+                public void onResponse(Call<ListEvent> call, Response<ListEvent> response) {
+                    List<Event> value = response.body().getListEvent();
+                    listEvent = new ArrayList<>();
+                    for (Event event : value) {
+                        if (event.getStatus() == 1) {
+                            listEvent.add(event);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ListEvent> call, Throwable t) {
+                @Override
+                public void onFailure(Call<ListEvent> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+        } else {
+            showSettingAlert();
+        }
         initAd();
         isTypeAllLocation = getIntent().getBooleanExtra(MapIntent.TYPE_ALL_LOCATION, false);
         locationDirection = Parcels.unwrap(this.getIntent().getParcelableExtra(LOCATION_DIRECTION));
@@ -161,7 +173,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         }
         LocationAvailability locationAvailability =
                 LocationServices.FusedLocationApi.getLocationAvailability(googleApiClient);
-        if (locationAvailability.isLocationAvailable()) {
+        if (locationAvailability.isLocationAvailable() && isNetworkAvailable()) {
             refreshMapFloatAction.setVisibility(View.VISIBLE);
             selectMapFloatAction.setVisibility(View.VISIBLE);
             LocationRequest locationRequest = new LocationRequest()
@@ -181,17 +193,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                 setOnClickInfoMarker(null);
             }
         } else {
-            refreshMapFloatAction.setVisibility(View.GONE);
-            selectMapFloatAction.setVisibility(View.GONE);
-            Snackbar.make(refreshMapFloatAction, "please check GPS and Internet",
-                    Snackbar.LENGTH_INDEFINITE).setAction(
-                    "Try Agian", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            googleApiClient.disconnect();
-                            googleApiClient.connect();
-                        }
-                    }).show();
+            showSettingAlert();
         }
     }
 
@@ -236,16 +238,8 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     }
 
     private void makePolylineOptions(final Locations location) {
-        if (markerCurrent != null) {
-            markerCurrent.remove();
-        }
-        int id = getResources().getIdentifier(SettingValues.SELF_MARKER, "drawable",
-                getPackageName());
-        markerCurrent = map.addMarker(new MarkerOptions().title("ตำแหน่งปัจจุบัน")
-                .position(latLngCurrentLocation)
-                .icon(
-                        BitmapDescriptorFactory.fromResource(id)));
-        final ProgressDialog progressDialog = new ProgressDialog(MapActivity.this);
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("loading");
         progressDialog.show();
         String serverKey = getString(R.string.server_key);
@@ -258,60 +252,79 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                 .execute(new DirectionCallback() {
                     @Override
                     public void onDirectionSuccess(Direction direction, String rawBody) {
-                        Route route = direction.getRouteList().get(0);
-                        Leg leg = route.getLegList().get(0);
-                        ArrayList<LatLng> pointList = leg.getDirectionPoint();
-                        PolylineOptions polylineOptions = DirectionConverter.createPolyline(
-                                MapActivity.this, pointList, 5,
-                                Color.rgb(67, 160, 71));
-                        PolylineOptions start = new PolylineOptions().add(pointList.get(0))
-                                .add(latLngCurrentLocation)
-                                .width(6)
-                                .color(Color.rgb(67, 160, 71))
-                                .geodesic(true);
-                        PolylineOptions end = new PolylineOptions().add(
-                                pointList.get(pointList.size() - 1))
-                                .add(destination)
-                                .width(6)
-                                .color(Color.rgb(67, 160, 71))
-                                .geodesic(true);
-                        map.addPolyline(polylineOptions);
-                        map.addPolyline(start);
-                        map.addPolyline(end);
-
-                        int categoryID = location.getCategoryId();
-
-                        MarkerOptions marker = new MarkerOptions().position(destination).title(
-                                location.getLocationName() + "");
-                        if (location.getCategoryId() != 0) {
-                            int id = getResources().getIdentifier(
-                                    SettingValues.CATEGORY_MARKER + categoryID, "drawable",
+                        if (direction.getRouteList().size() != 0 &&
+                                direction.getRouteList() != null) {
+                            if (markerCurrent != null) {
+                                markerCurrent.remove();
+                            }
+                            int selfMarker = getResources().getIdentifier(SettingValues.SELF_MARKER,
+                                    "drawable",
                                     getPackageName());
-                            marker.icon(BitmapDescriptorFactory.fromResource(id));
+                            markerCurrent = map.addMarker(new MarkerOptions().title(
+                                    "ตำแหน่งปัจจุบัน")
+                                    .position(latLngCurrentLocation)
+                                    .icon(
+                                            BitmapDescriptorFactory.fromResource(selfMarker)));
+                            Route route = direction.getRouteList().get(0);
+                            Leg leg = route.getLegList().get(0);
+                            ArrayList<LatLng> pointList = leg.getDirectionPoint();
+                            PolylineOptions polylineOptions = DirectionConverter.createPolyline(
+                                    MapActivity.this, pointList, 5,
+                                    Color.rgb(67, 160, 71));
+                            PolylineOptions start = new PolylineOptions().add(pointList.get(0))
+                                    .add(latLngCurrentLocation)
+                                    .width(6)
+                                    .color(Color.rgb(67, 160, 71))
+                                    .geodesic(true);
+                            PolylineOptions end = new PolylineOptions().add(
+                                    pointList.get(pointList.size() - 1))
+                                    .add(destination)
+                                    .width(6)
+                                    .color(Color.rgb(67, 160, 71))
+                                    .geodesic(true);
+                            map.addPolyline(polylineOptions);
+                            map.addPolyline(start);
+                            map.addPolyline(end);
+
+                            int categoryID = location.getCategoryId();
+
+                            MarkerOptions marker = new MarkerOptions().position(destination).title(
+                                    location.getLocationName() + "");
+                            if (location.getCategoryId() != 0) {
+                                int id = getResources().getIdentifier(
+                                        SettingValues.CATEGORY_MARKER + categoryID, "drawable",
+                                        getPackageName());
+                                marker.icon(BitmapDescriptorFactory.fromResource(id));
+                            } else {
+                                BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(
+                                        R.drawable.marker_event);
+                                marker.icon(iconEvent);
+                            }
+                            map.addMarker(marker).showInfoWindow();
+
+                            Info distanceInfo = leg.getDistance();
+                            Info durationInfo = leg.getDuration();
+                            String distance = distanceInfo.getText();
+                            String duration = durationInfo.getText();
+                            Snackbar.make(refreshMapFloatAction, "ห่างจากสถานที่นี้เป็นระยะทาง " +
+                                    distance +
+                                    System.getProperty("line.separator") +
+                                    "ระยะเวลา " +
+                                    duration, Snackbar.LENGTH_LONG).show();
+                            progressDialog.cancel();
+                            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                            builder.include(latLngCurrentLocation);
+                            builder.include(destination);
+                            LatLngBounds bounds = builder.build();
+
+                            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
+                            map.animateCamera(cu);
                         } else {
-                            BitmapDescriptor iconEvent = BitmapDescriptorFactory.fromResource(
-                                    R.drawable.marker_event);
-                            marker.icon(iconEvent);
+                            progressDialog.dismiss();
+                            Snackbar.make(refreshMapFloatAction,
+                                    "Don't have direction from your location",
+                                    Snackbar.LENGTH_LONG).show();
                         }
-                        map.addMarker(marker).showInfoWindow();
-
-                        Info distanceInfo = leg.getDistance();
-                        Info durationInfo = leg.getDuration();
-                        String distance = distanceInfo.getText();
-                        String duration = durationInfo.getText();
-                        Snackbar.make(refreshMapFloatAction, "ห่างจากสถานที่นี้เป็นระยะทาง " +
-                                distance +
-                                System.getProperty("line.separator") +
-                                "ระยะเวลา " +
-                                duration, Snackbar.LENGTH_LONG).show();
-                        progressDialog.cancel();
-                        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                        builder.include(latLngCurrentLocation);
-                        builder.include(destination);
-                        LatLngBounds bounds = builder.build();
-
-                        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 200);
-                        map.animateCamera(cu);
                     }
 
                     @Override
@@ -319,6 +332,21 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
 
                     }
                 });
+
+    }
+
+
+    private void showSettingAlert() {
+        refreshMapFloatAction.setVisibility(View.GONE);
+        selectMapFloatAction.setVisibility(View.GONE);
+        Snackbar.make(refreshMapFloatAction, "please check Location and Internet",
+                Snackbar.LENGTH_INDEFINITE).setAction(
+                "Setting", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(Settings.ACTION_SETTINGS));
+                    }
+                }).show();
     }
 
     @OnClick(R.id.refresh_map)
@@ -342,6 +370,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                 if (isTypeAllLocation) {
                     for (Locations locations : listLocation) {
                         if (markerName.equals(locations.getLocationName())) {
+                            finish();
                             startActivity(new MainIntent(getApplicationContext(),
                                     locations.getLocationId()));
                             break;
@@ -349,6 +378,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                     }
                 } else {
                     if (!locationDirection.getIsEventLocation()) {
+                        finish();
                         startActivity(new MainIntent(getApplicationContext(),
                                 locationDirection.getLocationId()));
                     }
@@ -387,16 +417,18 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                             locationDirection = new Locations();
                             locationDirection.setIsEventLocation(true);
                             locationDirection.setLocationName(event.getEventName());
-                            if(event.getLat() == 0 && event.getLng() == 0){
+                            if (event.getLat() == 0 && event.getLng() == 0) {
                                 getRealm().executeTransaction(new Realm.Transaction() {
                                     @Override
                                     public void execute(Realm realm) {
-                                        Locations location = realm.where(Locations.class).equalTo(LOCATION_ID_FILED,event.getLocationId()).findFirst();
+                                        Locations location = realm.where(Locations.class)
+                                                .equalTo(LOCATION_ID_FILED, event.getLocationId())
+                                                .findFirst();
                                         locationDirection.setLongitude(location.getLongitude());
                                         locationDirection.setLatitude(location.getLatitude());
                                     }
                                 });
-                            }else{
+                            } else {
                                 locationDirection.setLongitude(event.getLng());
                                 locationDirection.setLatitude(event.getLat());
                             }
@@ -436,7 +468,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
         builder = new LatLngBounds.Builder();
         map.clear();
         refreshMapFloatAction.setVisibility(View.GONE);
-        List<Locations> listAllLocation = new ArrayList<>();
+        listAllLocation = new ArrayList<>();
         for (Integer position : listPositionCategory) {
             RealmResults<Locations> listLocation = getRealm().where(Locations.class).equalTo(
                     "categoryId", position).findAll();
@@ -448,10 +480,12 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                     public void execute(Realm realm) {
                         for (Event event : listEvent) {
                             LatLng latLngLocation = null;
-                            if(event.getLat() == 0 && event.getLng() == 0){
-                               Locations location = realm.where(Locations.class).equalTo(LOCATION_ID_FILED,event.getLocationId()).findFirst();
-                                latLngLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            }else{
+                            if (event.getLat() == 0 && event.getLng() == 0) {
+                                Locations location = realm.where(Locations.class).equalTo(
+                                        LOCATION_ID_FILED, event.getLocationId()).findFirst();
+                                latLngLocation = new LatLng(location.getLatitude(),
+                                        location.getLongitude());
+                            } else {
                                 latLngLocation = new LatLng(event.getLat(), event.getLng());
                             }
                             builder.include(latLngLocation);
@@ -490,5 +524,12 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     @Override
     public void onClickNeutralButton() {
 
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

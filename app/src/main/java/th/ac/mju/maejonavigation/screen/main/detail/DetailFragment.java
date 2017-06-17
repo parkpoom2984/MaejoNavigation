@@ -133,7 +133,7 @@ public class DetailFragment extends MjnFragment {
                 getContext().getPackageName());
         showIconFavorite(location.getFavoriteStatus());
         updateMapUI(latLng, icon);
-        checkNetworkAvailable();
+        ((MainActivity) getActivity()).checkNetworkAvailable();
     }
 
     @OnClick(R.id.detail_get_direction)
@@ -178,27 +178,6 @@ public class DetailFragment extends MjnFragment {
                 locationCard.setVisibility(View.VISIBLE);
                 mapCard.setVisibility(View.VISIBLE);
                 break;
-        }
-    }
-
-    public void checkNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        boolean isConnect = activeNetworkInfo != null && activeNetworkInfo.isConnected();
-        Snackbar snackbar = Snackbar.make(locationCard, R.string.internet_can_not_connect,
-                Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction(R.string.try_again, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkNetworkAvailable();
-                updateLocationDetail(location);
-            }
-        });
-        if (!isConnect) {
-            snackbar.show();
-        } else {
-            snackbar.dismiss();
         }
     }
 

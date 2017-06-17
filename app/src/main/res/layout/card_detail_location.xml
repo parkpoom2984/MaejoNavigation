@@ -33,6 +33,7 @@
         </RelativeLayout>
 
         <TextView
+            android:textStyle="bold"
             android:id="@+id/detail_location_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,12 +50,6 @@
             android:layout_margin="16dp"
             android:gravity="center_horizontal"
             android:textColor="@color/mjn_default_gray" />
-
-        <TextView
-            android:id="@+id/location_floor_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp" />
 
         <View
             android:id="@+id/plan_line"

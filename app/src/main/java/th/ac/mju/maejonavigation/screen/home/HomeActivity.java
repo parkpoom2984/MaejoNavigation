@@ -31,7 +31,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
     ImageView logoImageView;
     @InjectView(R.id.home_about_us)
     TextView aboutUsTextView;
-
+    private ProgressDialog progressDialog;
     private HomePresenter homePresenter;
 
     @Override
@@ -52,7 +52,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
 
     private enum State {
         LOADING,
-        FAILURE
+        LOADED
     }
 
     @Override
@@ -61,6 +61,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home);
         ButterKnife.inject(this);
+        progressDialog = new ProgressDialog(this);
         updateStatusBar();
         homePresenter = new HomePresenter();
         homePresenter.create(this,getApplicationContext());
@@ -107,13 +108,13 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
     private void setState(State state) {
         switch (state) {
             case LOADING:
-                ProgressDialog progressDialog = new ProgressDialog(this);
                 progressDialog.setMessage(getString(R.string.loading));
                 progressDialog.show();
                 logoImageView.setVisibility(View.GONE);
                 aboutUsTextView.setVisibility(View.GONE);
                 break;
-            case FAILURE:
+            case LOADED:
+                progressDialog.dismiss();
                 break;
         }
     }

@@ -1,7 +1,10 @@
 package th.ac.mju.maejonavigation.screen.main;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.design.widget.TabLayout;
@@ -16,6 +19,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -220,8 +224,28 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                Snackbar.make(mViewPager, R.string.msg_add_event, Snackbar.LENGTH_LONG).show();
+                Snackbar.make(adView, R.string.msg_add_event, Snackbar.LENGTH_LONG).show();
             }
+        }
+    }
+
+    public void checkNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        boolean isConnect = activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        Snackbar snackbar = Snackbar.make(adView, R.string.internet_can_not_connect,
+                Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction(R.string.try_again, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkNetworkAvailable();
+            }
+        });
+        if (!isConnect) {
+            snackbar.show();
+        } else {
+            snackbar.dismiss();
         }
     }
 }

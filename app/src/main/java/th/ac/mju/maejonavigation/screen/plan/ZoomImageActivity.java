@@ -48,19 +48,6 @@ public class ZoomImageActivity extends AppCompatActivity {
         //Setting details screen layout
         setContentView(R.layout.activity_zoom_image);
 
-        FloatingActionButton menuBtn = (FloatingActionButton) findViewById(R.id.menu);
-        menuBtn.setBackgroundTintList(getResources().getColorStateList(R.color.mjn_primary));
-        menuBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                exitAnimation(new Runnable() {
-                    public void run() {
-                        finish();
-                    }
-                });
-            }
-        });
-
         try {
             board = BitmapFactory.decodeStream(getApplicationContext().openFileInput("myImage"));
         } catch (FileNotFoundException e) {

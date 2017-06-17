@@ -32,6 +32,7 @@ public class EventFragment extends MjnFragment
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event, container, false);
         ButterKnife.inject(this, view);
+        ((MainActivity) getActivity()).checkNetworkAvailable();
         eventRecyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         eventRecyclerView.setLayoutManager(layoutManager);

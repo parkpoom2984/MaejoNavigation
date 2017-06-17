@@ -38,6 +38,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import io.realm.Realm;
 import th.ac.mju.maejonavigation.R;
 import th.ac.mju.maejonavigation.app.MjnActivity;
 import th.ac.mju.maejonavigation.model.Floor;
@@ -143,7 +144,23 @@ public class PlanActivity extends MjnActivity implements PlanPresenter.View {
                             }
                         }
                         title.setText(locationName + " ชั้น " + floor.getFloorName());
-                        //title.setTypeface(SettingValues.GET_FONT(PlanActivity.this));
+                        roomDetail.setVisibility(VISIBLE);
+                        roomType.setVisibility(VISIBLE);
+                        roomCapacity.setVisibility(VISIBLE);
+                        for (Room room : listRoom) {
+                            if (room.getRoomId() == roomId) {
+                                roomDetail.setText(getResources().getString(R.string.room_detail,
+                                        room.getRoomDetail()));
+                                roomType.setText(getResources().getString(R.string.room_type,
+                                        room.getRoomType()));
+                                roomCapacity.setText(
+                                        getResources().getString(R.string.room_capacity,
+                                                room.getRoomCapacity()));
+                                break;
+                            }
+                            //title.setTypeface(SettingValues.GET_FONT(PlanActivity.this));
+                        }
+
                         planCardView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {

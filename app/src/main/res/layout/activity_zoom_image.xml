@@ -25,13 +25,5 @@
         android:textColor="#fff"
         android:textSize="20sp" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/menu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:padding="10dp"
-        android:src="@drawable/back_icon" />
 </FrameLayout>
 
