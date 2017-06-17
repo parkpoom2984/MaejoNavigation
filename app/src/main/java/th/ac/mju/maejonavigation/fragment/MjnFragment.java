@@ -33,14 +33,10 @@ public abstract class MjnFragment extends Fragment {
 
 
     public static Realm getRealm() {
-        try{
-            return Realm.getDefaultInstance();
-        }catch (Exception e){
             RealmConfiguration config = new RealmConfiguration.Builder()
                     .deleteRealmIfMigrationNeeded()
                     .build();
             return Realm.getInstance(config);
-        }
     }
 
     public static Bus getBus() {

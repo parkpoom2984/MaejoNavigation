@@ -74,7 +74,7 @@ public class HomeActivity extends MjnActivity implements HomePresenter.View{
             @Override
             public void run()
             {
-                if(!homePresenter.isStatusSet()){
+                if(!homePresenter.isStatusSet() || getRealm().isEmpty()){
                     setState(State.LOADING);
                     homePresenter.callFromService(getService(),getRealm());
                 }else{

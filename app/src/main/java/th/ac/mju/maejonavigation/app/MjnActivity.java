@@ -50,15 +50,10 @@ public class MjnActivity extends AppCompatActivity{
     }
 
     public static Realm getRealm(){
-        try{
-            return Realm.getDefaultInstance();
-        }catch (Exception e){
             RealmConfiguration config = new RealmConfiguration.Builder()
                     .deleteRealmIfMigrationNeeded()
                     .build();
-            stringPreference.delete();
             return Realm.getInstance(config);
-        }
     }
 
     public static MjnApi getService(){
