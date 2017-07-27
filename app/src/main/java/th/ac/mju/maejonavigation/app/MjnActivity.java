@@ -35,6 +35,7 @@ public class MjnActivity extends AppCompatActivity{
         stringPreference = new StringPreference(sp, DATA_STATUS);
         initRealm();
         initFabric();
+        //add Jenkins for build .apk
     }
 
     private void initRealm() {
