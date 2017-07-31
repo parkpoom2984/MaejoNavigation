@@ -1,0 +1,1 @@
+build and upload apk to Fabric by Jenkins
