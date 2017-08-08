@@ -260,15 +260,8 @@ public class PlanActivity extends MjnActivity implements PlanPresenter.View {
     public Bitmap getBitMapFromURL(String src) {
         try {
             URL url = new URL(src);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            BitmapFactory.Options opt = new BitmapFactory.Options();
-            opt.inMutable = true;
-            Bitmap Mybitmap = BitmapFactory.decodeStream(input, null, opt);
-            return Mybitmap;
+            Bitmap floorBitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            return floorBitmap;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
