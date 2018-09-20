@@ -12,6 +12,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 
 import android.os.Bundle;
@@ -170,6 +171,7 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
         getMenuInflater().inflate(R.menu.menu_main, menu);
         final SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
                 .getActionView();
+        MenuItem searchMenuItem = menu.findItem(R.id.action_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -185,6 +187,19 @@ public class MainActivity extends MjnActivity implements MainPresenter.SearchLis
                     switchTabTo(LOCATION_PAGE.getPosition());
                 }
                 return false;
+            }
+        });
+
+        MenuItemCompat.setOnActionExpandListener(searchMenuItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                locationFragment.searchDefault();
+                return true;
             }
         });
         return true;
