@@ -39,8 +39,10 @@ abstract class MjnDialogFragment extends DialogFragment {
         super.onStart();
         Button positive = ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_POSITIVE);
         Button negative = ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEGATIVE);
+        Button neutral = ((AlertDialog) getDialog()).getButton(AlertDialog.BUTTON_NEUTRAL);
         positive.setTextColor(ContextCompat.getColor(getContext(), R.color.mjn_primary));
         negative.setTextColor(ContextCompat.getColor(getContext(), R.color.mjn_primary));
+        neutral.setTextColor(ContextCompat.getColor(getContext(), R.color.mjn_primary));
     }
 
     protected abstract void onConfigBuilder(

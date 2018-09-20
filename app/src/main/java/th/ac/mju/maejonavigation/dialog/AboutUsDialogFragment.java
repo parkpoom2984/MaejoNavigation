@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 
 import th.ac.mju.maejonavigation.R;
+import th.ac.mju.maejonavigation.screen.privacy_policy.PrivacyPolicyActivity;
 
 /**
  * Created by Teh on 5/21/2017.
@@ -44,6 +45,19 @@ public class AboutUsDialogFragment extends SimpleTextDialogFragment {
     }
 
     @Override
+    protected void onPositiveButtonClick(DialogInterface dialog, int which) {
+        super.onPositiveButtonClick(dialog, which);
+        startActivity(getOpenFacebookIntent(getContext()));
+    }
+
+    @Override
+    protected void onNeutralButtonClick(DialogInterface dialog, int which) {
+        super.onNeutralButtonClick(dialog, which);
+        Intent intent = new Intent(getContext(), PrivacyPolicyActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
     protected CharSequence getPositiveText() {
         return getString(R.string.contact);
     }
@@ -54,9 +68,8 @@ public class AboutUsDialogFragment extends SimpleTextDialogFragment {
     }
 
     @Override
-    protected void onPositiveButtonClick(DialogInterface dialog, int which) {
-        super.onPositiveButtonClick(dialog, which);
-        startActivity(getOpenFacebookIntent(getContext()));
+    protected CharSequence getNeutralText() {
+        return getString(R.string.privacy_policy);
     }
 
     private static Intent getOpenFacebookIntent(Context context) {

@@ -29,6 +29,13 @@ abstract class SimpleTextDialogFragment extends MjnDialogFragment {
                 onPositiveButtonClick(dialog, which);
             }
         });
+
+        builder.setNeutralButton(getNeutralText(),new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                onNeutralButtonClick(dialog, which);
+            }
+        });
     }
 
     protected int getIconResId() {
@@ -47,7 +54,11 @@ abstract class SimpleTextDialogFragment extends MjnDialogFragment {
         return getString(android.R.string.ok);
     }
 
+    protected CharSequence getNeutralText() { return null; }
+
     protected void onNegativeButtonClick(DialogInterface dialog, int which) {}
 
     protected void onPositiveButtonClick(DialogInterface dialog, int which) {}
+
+    protected void onNeutralButtonClick(DialogInterface dialog, int which) {}
 }
