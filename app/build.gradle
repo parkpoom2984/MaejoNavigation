@@ -17,12 +17,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.3"
     defaultConfig {
         applicationId "th.ac.mju.maejonavigation"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 26
         def STRING = "String"
         def MJN_API_BASE_URL = "MJN_API_BASE_URL"
         buildConfigField STRING, MJN_API_BASE_URL, "\"http://www.itsci.mju.ac.th/MaejoNavigation/\""
@@ -59,7 +59,7 @@ dependencies {
     })
 
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.9.5@aar') {
         transitive = true;
     }
     compile 'com.android.support:appcompat-v7:25.3.1'

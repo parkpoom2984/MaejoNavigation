@@ -1,6 +1,7 @@
 package th.ac.mju.maejonavigation.screen.map;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +19,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 
 import com.akexorcist.googledirection.DirectionCallback;
@@ -99,6 +100,8 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     private List<Event> listEvent;
     private static final String LOCATION_ID_FILED = "locationId";
 
+    private static final int REQUEST_CODE_ASK_PERMISSIONS = 123;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,10 +170,22 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_CODE_ASK_PERMISSIONS);
+            }
+        } else {
+            setupMap();
         }
+
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private void setupMap() {
         LocationAvailability locationAvailability =
                 LocationServices.FusedLocationApi.getLocationAvailability(googleApiClient);
         if (locationAvailability.isLocationAvailable() && isNetworkAvailable()) {
@@ -339,7 +354,7 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
     private void showSettingAlert() {
         refreshMapFloatAction.setVisibility(View.GONE);
         selectMapFloatAction.setVisibility(View.GONE);
-        Snackbar.make(refreshMapFloatAction, "please check Location and Internet",
+        Snackbar.make(refreshMapFloatAction, "please check Permission and Internet",
                 Snackbar.LENGTH_INDEFINITE).setAction(
                 "Setting", new View.OnClickListener() {
                     @Override
@@ -531,5 +546,22 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    setupMap();
+                } else {
+                    // Permission Denied
+                    showSettingAlert();
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 }

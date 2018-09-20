@@ -31,9 +31,11 @@
     <string name="add_location_marker_choose_location_first">please choose location on the map first</string>
     <string name="contact">CONTACT</string>
     <string name="close">CLOSE</string>
+    <string name="privacy_policy">PRIVACY POLICY</string>
     <string name="about_us">About us</string>
     <string name="category_dialog_select_category">Please Select Location</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="floor_plan">Floor Plan</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
 </resources>

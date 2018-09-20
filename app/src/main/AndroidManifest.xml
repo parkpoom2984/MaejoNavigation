@@ -37,7 +37,7 @@
         </activity>
         <activity
             android:name=".screen.main.MainActivity"
-            android:theme="@style/AppTheme.StatusColor"></activity>
+            android:theme="@style/AppTheme.StatusColor" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -55,21 +55,24 @@
 
         <activity
             android:name=".screen.map.MapActivity"
-            android:theme="@style/AppTheme.StatusColor"/>
+            android:theme="@style/AppTheme.StatusColor" />
         <activity
             android:name=".screen.plan.PlanActivity"
-            android:theme="@style/AppTheme.StatusColor"/>
+            android:theme="@style/AppTheme.StatusColor" />
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
         <activity
             android:name=".screen.plan.ZoomImageActivity"
-            android:theme="@style/AppTheme.StatusColor"/>
+            android:theme="@style/AppTheme.StatusColor" />
         <activity
             android:name=".screen.addevent.AddEventActivity"
-            android:theme="@style/AppTheme.StatusColor"/>
-        <activity android:name=".screen.addmarker.AddEventMarkerMapActivity"
-            android:theme="@style/AppTheme.StatusColor"/>
+            android:theme="@style/AppTheme.StatusColor" />
+        <activity
+            android:name=".screen.addmarker.AddEventMarkerMapActivity"
+            android:theme="@style/AppTheme.StatusColor" />
+        <activity android:name=".screen.privacy_policy.PrivacyPolicyActivity"
+            android:theme="@style/AppTheme.StatusColor" />
     </application>
 
 </manifest>
