@@ -35,6 +35,8 @@ public class LocationFragment extends MjnFragment
     LinearLayout notFoundLayout;
     private LocationPresenter locationPresenter;
 
+    private boolean isSearch = false;
+
     public static LocationFragment newInstance() {
         return new LocationFragment();
     }
@@ -74,7 +76,7 @@ public class LocationFragment extends MjnFragment
                 countResult++;
             }
         }
-        if (countResult == 1) {
+        if (isSearch && countResult == 1) {
             Floor floor = location.getListFloor().get(0);
             int roomId = floor.getListRoom().get(0).getRoomId();
             Intent intent = new PlanIntent(getContext(), location.getLocationName(), floor, roomId);
@@ -87,8 +89,11 @@ public class LocationFragment extends MjnFragment
 
     @Override
     public void showListLocation(List<Locations> listLocation) {
+        isSearch = false;
         LocationAdapter locationAdapter = new LocationAdapter(listLocation, this, State.SELECT);
         mRecyclerView.setAdapter(locationAdapter);
+        mRecyclerView.setVisibility(View.VISIBLE);
+        notFoundLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -99,6 +104,7 @@ public class LocationFragment extends MjnFragment
     }
 
     public void searchEvent(List<Locations> listLocation) {
+        isSearch = true;
         if (listLocation.size() == 0) {
             mRecyclerView.setVisibility(View.GONE);
             notFoundLayout.setVisibility(View.VISIBLE);
