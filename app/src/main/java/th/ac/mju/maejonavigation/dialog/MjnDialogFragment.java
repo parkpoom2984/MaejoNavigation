@@ -43,6 +43,9 @@ abstract class MjnDialogFragment extends DialogFragment {
         positive.setTextColor(ContextCompat.getColor(getContext(), R.color.mjn_primary));
         negative.setTextColor(ContextCompat.getColor(getContext(), R.color.mjn_primary));
         neutral.setTextColor(ContextCompat.getColor(getContext(), R.color.mjn_primary));
+        positive.setTextSize(10);
+        negative.setTextSize(10);
+        neutral.setTextSize(10);
     }
 
     protected abstract void onConfigBuilder(
