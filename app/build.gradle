@@ -26,8 +26,8 @@ android {
         def STRING = "String"
         def MJN_API_BASE_URL = "MJN_API_BASE_URL"
         buildConfigField STRING, MJN_API_BASE_URL, "\"http://www.itsci.mju.ac.th/MaejoNavigation/\""
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
