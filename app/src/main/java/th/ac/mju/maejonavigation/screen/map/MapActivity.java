@@ -176,6 +176,8 @@ public class MapActivity extends MjnActivity implements OnMapReadyCallback,
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_CODE_ASK_PERMISSIONS);
+            } else {
+                setupMap();
             }
         } else {
             setupMap();
